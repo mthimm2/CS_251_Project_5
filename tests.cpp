@@ -548,6 +548,12 @@ TEST(mymap, get) {
     mymap<int, double> intToDouble;
     mymap<int, char> intToChar;
 
+    ASSERT_EQ(intToInt.get(0), 0);
+    ASSERT_EQ(intToString.get(0), "");
+    ASSERT_EQ(intToDouble.get(0), 0.0);
+    ASSERT_EQ(intToChar.get(0), '\0');
+
+
     // Int to other tests
     for(int x = 0; x < 10; ++x) {
         intToInt.put(x, x);
@@ -557,6 +563,7 @@ TEST(mymap, get) {
     }
 
     // Expected values
+    ASSERT_EQ(intToInt.get(0), 0);
     ASSERT_EQ(intToInt.get(0), 0);
     ASSERT_EQ(intToInt.get(1), 1);
     ASSERT_EQ(intToInt.get(2), 2);
@@ -607,6 +614,11 @@ TEST(mymap, get) {
     mymap<char, int> charToInt;
     mymap<char, double> charToDouble;
     mymap<char, string> charToString;
+
+    ASSERT_EQ(charToChar.get('a'), '\0');
+    ASSERT_EQ(charToInt.get('a'), 0);
+    ASSERT_EQ(charToDouble.get('a'), 0.0);
+    ASSERT_EQ(charToString.get('a'), "");
 
     // Char to other tests
     charToChar.put('a', 'a');
@@ -668,6 +680,11 @@ TEST(mymap, get) {
     mymap<string, double> stringToDouble;
     mymap<string, int> stringToInt;
 
+    ASSERT_EQ(stringToString.get("a"), "");
+    ASSERT_EQ(stringToChar.get("a"), '\0');
+    ASSERT_EQ(stringToDouble.get("a"), 0.0);
+    ASSERT_EQ(stringToInt.get("a"), 0);
+
     // String to other tests
     stringToString.put("Oh Marone!", "Paulie");
     stringToString.put("Stugots", "Tony");
@@ -722,6 +739,11 @@ TEST(mymap, get) {
     mymap<double, string> doubleToString;
     mymap<double, int> doubleToInt;
     mymap<double, char> doubleToChar;
+
+    ASSERT_EQ(doubleToDouble.get(0.0), 0.0);
+    ASSERT_EQ(doubleToString.get(0.0), "");
+    ASSERT_EQ(doubleToInt.get(0.0), 0);
+    ASSERT_EQ(doubleToChar.get(0.0), '\0'); 
 
     // Double to other tests
     for(int x = 0; x < 10; ++x) {
