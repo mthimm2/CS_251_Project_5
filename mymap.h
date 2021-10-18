@@ -76,11 +76,11 @@ class mymap {
     // Time complexity: O(1)
     //
     mymap() {
+        // Basis of the tree is the root, but no node exists there for the default constructor
+        this->root = nullptr;
 
-
-        // TODO: write this function.
-
-
+        // No nodes means a size of -1 by convention
+        this->size = -1;
     }
 
     //
@@ -157,8 +157,20 @@ class mymap {
     //
     void put(keyType key, valueType value) {
 
+        // Set up the new node with a default configuration
+        NODE* toPut = new NODE();
+        toPut->key = key;
+        toPut->value = value;
+        toPut->left = nullptr;
+        toPut->right = nullptr;
+        toPut->nL = 0;
+        toPut->nR = 0;
+        toPut->isThreaded = false;
 
-        // TODO: write this function.
+        // Base case, tree is totally empty
+        if(this->root == nullptr) {
+
+        }
 
 
     }
@@ -222,12 +234,8 @@ class mymap {
     // O(1)
     //
     int Size() {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+        // Return the size member variable
+        return this->size;  
     }
 
     //
