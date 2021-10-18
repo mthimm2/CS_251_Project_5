@@ -228,9 +228,27 @@ class mymap {
   // threaded, self-balancing BST
   //
   valueType get(keyType key) {
-    // TODO: write this function.
+    // Start from the beginning
+    NODE* cur = this->root;
 
-    return {};  // TODO: Update this return.
+    // If the tree is empty
+    if(cur == nullptr) {
+        return valueType();
+    }
+
+    // Walk until we fall out of the tree
+    while(cur != nullptr) {
+        if(key < cur->key) {
+            cur = cur->left;
+        } else if (key > cur->key) {
+            cur = cur->right;
+        } else {
+            // If the key is equal, return the value at that node
+            return cur->value;
+        }
+    }
+    // If we made it here, we fell out of the tree.
+    return valueType();
   }
 
   //

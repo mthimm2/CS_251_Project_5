@@ -6,7 +6,7 @@
 using namespace std;
 
 TEST(mymap, defaultConstructor) {
-    cout << "Testing default constructor" << endl;
+    // cout << "Testing default constructor" << endl;
 
     mymap<int, int> intToInt;
     mymap<int, string> intToString;
@@ -68,12 +68,12 @@ TEST(mymap, defaultConstructor) {
     ASSERT_NE(doubleToDouble.Size(), 1);
     ASSERT_NE(doubleToString.Size(), 1);
 
-    cout << "Finished testing default constructor" << endl;
+    // cout << "Finished testing default constructor" << endl;
 }
 
 TEST(mymap, put) {
 
-    cout << "Testing put function" << endl;
+    // cout << "Testing put function" << endl;
 
     mymap<int, int> intToInt;
     mymap<int, string> intToString;
@@ -351,12 +351,12 @@ TEST(mymap, put) {
     ASSERT_TRUE(doubleToDouble.contains(12.0));
     ASSERT_TRUE(doubleToDouble.contains(13.0));
 
-    cout <<"Finished testing put function" << endl;
+    // cout <<"Finished testing put function" << endl;
 }
 
 TEST(mymap, size) {
 
-    cout << "Testing size function" << endl;
+    // cout << "Testing size function" << endl;
 
     // Integer keys
     mymap<int, int> intToInt;
@@ -535,6 +535,246 @@ TEST(mymap, size) {
     ASSERT_EQ(doubleToString.Size(), 10);
     ASSERT_EQ(doubleToChar.Size(), 10);
 
-    cout <<"Finished testing size function" << endl;
+    // cout <<"Finished testing size function" << endl;
+}
 
+TEST(mymap, get) {
+
+    // cout << "Testing get function" << endl;
+
+    // Integer keys
+    mymap<int, int> intToInt;
+    mymap<int, string> intToString;
+    mymap<int, double> intToDouble;
+    mymap<int, char> intToChar;
+
+    // Int to other tests
+    for(int x = 0; x < 10; ++x) {
+        intToInt.put(x, x);
+        intToString.put(x, "Gabagool");
+        intToChar.put(x, 'G');
+        intToDouble.put(x, 2.2);
+    }
+
+    // Expected values
+    ASSERT_EQ(intToInt.get(0), 0);
+    ASSERT_EQ(intToInt.get(1), 1);
+    ASSERT_EQ(intToInt.get(2), 2);
+    ASSERT_EQ(intToInt.get(3), 3);
+    ASSERT_EQ(intToInt.get(4), 4);
+    ASSERT_EQ(intToInt.get(5), 5);
+    ASSERT_EQ(intToInt.get(6), 6);
+    ASSERT_EQ(intToInt.get(7), 7);
+    ASSERT_EQ(intToInt.get(8), 8);
+    ASSERT_EQ(intToInt.get(9), 9);
+
+    ASSERT_EQ(intToString.get(0), "Gabagool");
+    ASSERT_EQ(intToString.get(1), "Gabagool");
+    ASSERT_EQ(intToString.get(2), "Gabagool");
+    ASSERT_EQ(intToString.get(3), "Gabagool");
+    ASSERT_EQ(intToString.get(4), "Gabagool");
+    ASSERT_EQ(intToString.get(5), "Gabagool");
+    ASSERT_EQ(intToString.get(6), "Gabagool");
+    ASSERT_EQ(intToString.get(7), "Gabagool");
+    ASSERT_EQ(intToString.get(8), "Gabagool");
+    ASSERT_EQ(intToString.get(9), "Gabagool");
+
+    ASSERT_EQ(intToChar.get(0), 'G');
+    ASSERT_EQ(intToChar.get(1), 'G');
+    ASSERT_EQ(intToChar.get(2), 'G');
+    ASSERT_EQ(intToChar.get(3), 'G');
+    ASSERT_EQ(intToChar.get(4), 'G');
+    ASSERT_EQ(intToChar.get(5), 'G');
+    ASSERT_EQ(intToChar.get(6), 'G');
+    ASSERT_EQ(intToChar.get(7), 'G');
+    ASSERT_EQ(intToChar.get(8), 'G');
+    ASSERT_EQ(intToChar.get(9), 'G');
+
+    ASSERT_EQ(intToDouble.get(0), 2.2);
+    ASSERT_EQ(intToDouble.get(1), 2.2);
+    ASSERT_EQ(intToDouble.get(2), 2.2);
+    ASSERT_EQ(intToDouble.get(3), 2.2);
+    ASSERT_EQ(intToDouble.get(4), 2.2);
+    ASSERT_EQ(intToDouble.get(5), 2.2);
+    ASSERT_EQ(intToDouble.get(6), 2.2);
+    ASSERT_EQ(intToDouble.get(7), 2.2);
+    ASSERT_EQ(intToDouble.get(8), 2.2);
+    ASSERT_EQ(intToDouble.get(9), 2.2);
+
+
+    // Char to something maps
+    mymap<char, char> charToChar;
+    mymap<char, int> charToInt;
+    mymap<char, double> charToDouble;
+    mymap<char, string> charToString;
+
+    // Char to other tests
+    charToChar.put('a', 'a');
+    charToChar.put('b', 'a');
+    charToChar.put('c', 'a');
+    charToChar.put('d', 'a');
+    charToChar.put('a', 'a');
+    charToChar.put('a', 'a');
+    charToChar.put('a', 'x');
+    ASSERT_EQ(charToChar.get('a'), 'a');
+    ASSERT_EQ(charToChar.get('b'), 'a');
+    ASSERT_EQ(charToChar.get('c'), 'a');
+    ASSERT_EQ(charToChar.get('d'), 'a');
+    ASSERT_NE(charToChar.get('a'), 'x');
+
+    charToInt.put('a', 1);
+    charToInt.put('b', 2);
+    charToInt.put('c', 3);
+    charToInt.put('d', 4);
+    charToInt.put('a', 1);
+    charToInt.put('a', 1);
+    charToInt.put('a', 7);
+    ASSERT_EQ(charToInt.get('a'), 1);
+    ASSERT_EQ(charToInt.get('b'), 2);
+    ASSERT_EQ(charToInt.get('c'), 3);
+    ASSERT_EQ(charToInt.get('d'), 4);
+    ASSERT_NE(charToInt.get('a'), 7);
+
+    charToString.put('a', "1.0");
+    charToString.put('b', "2.0");
+    charToString.put('c', "3.0");
+    charToString.put('d', "4.0");
+    charToString.put('a', "1.0");
+    charToString.put('a', "Gabagool");
+    charToString.put('a', "Oh Marone!");
+    ASSERT_EQ(charToString.get('a'), "1.0");
+    ASSERT_EQ(charToString.get('b'), "2.0");
+    ASSERT_EQ(charToString.get('c'), "3.0");
+    ASSERT_EQ(charToString.get('d'), "4.0");
+    ASSERT_NE(charToString.get('a'), "Oh Marone!");
+
+    charToDouble.put('a', 1.0);
+    charToDouble.put('b', 2.0);
+    charToDouble.put('c', 3.0);
+    charToDouble.put('d', 4.0);
+    charToDouble.put('a', 1.0);
+    charToDouble.put('a', 1.0);
+    charToDouble.put('a', 65.0);
+    ASSERT_EQ(charToDouble.get('a'), 1.0);
+    ASSERT_EQ(charToDouble.get('b'), 2.0);
+    ASSERT_EQ(charToDouble.get('c'), 3.0);
+    ASSERT_EQ(charToDouble.get('d'), 4.0);
+    ASSERT_NE(charToDouble.get('a'), 65.0);
+
+
+    // String keys
+    mymap<string, string> stringToString;
+    mymap<string, char> stringToChar;
+    mymap<string, double> stringToDouble;
+    mymap<string, int> stringToInt;
+
+    // String to other tests
+    stringToString.put("Oh Marone!", "Paulie");
+    stringToString.put("Stugots", "Tony");
+    stringToString.put("Gabagool", "Silvio");
+    stringToString.put("Let's get back to that Gabagool", "Melfi");
+    stringToString.put("Christopher", "Adriana");
+    stringToString.put("Stugots", "Carmela");
+    ASSERT_EQ(stringToString.get("Oh Marone!"), "Paulie");
+    ASSERT_EQ(stringToString.get("Stugots"), "Tony");
+    ASSERT_EQ(stringToString.get("Gabagool"), "Silvio");
+    ASSERT_EQ(stringToString.get("Let's get back to that Gabagool"), "Melfi");
+    ASSERT_NE(stringToString.get("Stugots"), "Carmela");
+
+    stringToChar.put("Oh Marone!", 'P');
+    stringToChar.put("Stugots", 'T');
+    stringToChar.put("Gabagool", 'S');
+    stringToChar.put("Let's get back to that Gabagool", 'M');
+    stringToChar.put("Christopher", 'A');
+    stringToChar.put("Stugots", 'C');
+    ASSERT_EQ(stringToChar.get("Oh Marone!"), 'P');
+    ASSERT_EQ(stringToChar.get("Stugots"), 'T');
+    ASSERT_EQ(stringToChar.get("Gabagool"), 'S');
+    ASSERT_EQ(stringToChar.get("Let's get back to that Gabagool"), 'M');
+    ASSERT_NE(stringToChar.get("Stugots"), 'C');
+
+    stringToInt.put("Oh Marone!", 1);
+    stringToInt.put("Stugots", 2);
+    stringToInt.put("Gabagool", 3);
+    stringToInt.put("Let's get back to that Gabagool", 4);
+    stringToInt.put("Christopher", 5);
+    stringToInt.put("Stugots", 6);
+    ASSERT_EQ(stringToInt.get("Oh Marone!"), 1);
+    ASSERT_EQ(stringToInt.get("Stugots"), 2);
+    ASSERT_EQ(stringToInt.get("Gabagool"), 3);
+    ASSERT_EQ(stringToInt.get("Let's get back to that Gabagool"), 4);
+    ASSERT_NE(stringToInt.get("Stugots"), 6);
+
+    stringToDouble.put("Oh Marone!", 1.0);
+    stringToDouble.put("Stugots", 2.0);
+    stringToDouble.put("Gabagool", 3.0);
+    stringToDouble.put("Let's get back to that Gabagool", 4.0);
+    stringToDouble.put("Christopher", 5.0);
+    stringToDouble.put("Stugots", 6.0);
+    ASSERT_EQ(stringToDouble.get("Oh Marone!"), 1.0);
+    ASSERT_EQ(stringToDouble.get("Stugots"), 2.0);
+    ASSERT_EQ(stringToDouble.get("Gabagool"), 3.0);
+    ASSERT_EQ(stringToDouble.get("Let's get back to that Gabagool"), 4.0);
+    ASSERT_NE(stringToDouble.get("Stugots"), 6.0);
+    
+    // Double keys
+    mymap<double, double> doubleToDouble;
+    mymap<double, string> doubleToString;
+    mymap<double, int> doubleToInt;
+    mymap<double, char> doubleToChar;
+
+    // Double to other tests
+    for(int x = 0; x < 10; ++x) {
+        doubleToInt.put((double)(x + 1), x);
+        doubleToString.put((double)(x + 2), "Gabagool");
+        doubleToChar.put((double)(x + 3), 'G');
+        doubleToDouble.put((double)(x + 4), 2.2);
+    }
+
+    // Expected values
+    ASSERT_EQ(doubleToInt.get(1.0), 0);
+    ASSERT_EQ(doubleToInt.get(2.0), 1);
+    ASSERT_EQ(doubleToInt.get(3.0), 2);
+    ASSERT_EQ(doubleToInt.get(4.0), 3);
+    ASSERT_EQ(doubleToInt.get(5.0), 4);
+    ASSERT_EQ(doubleToInt.get(6.0), 5);
+    ASSERT_EQ(doubleToInt.get(7.0), 6);
+    ASSERT_EQ(doubleToInt.get(8.0), 7);
+    ASSERT_EQ(doubleToInt.get(9.0), 8);
+    ASSERT_EQ(doubleToInt.get(10.0), 9);
+
+    ASSERT_EQ(doubleToString.get(2.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(3.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(4.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(5.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(6.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(7.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(8.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(9.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(10.0), "Gabagool");
+    ASSERT_EQ(doubleToString.get(11.0), "Gabagool");
+
+    ASSERT_EQ(doubleToChar.get(3.0), 'G');
+    ASSERT_EQ(doubleToChar.get(4.0), 'G');
+    ASSERT_EQ(doubleToChar.get(5.0), 'G');
+    ASSERT_EQ(doubleToChar.get(6.0), 'G');
+    ASSERT_EQ(doubleToChar.get(7.0), 'G');
+    ASSERT_EQ(doubleToChar.get(8.0), 'G');
+    ASSERT_EQ(doubleToChar.get(9.0), 'G');
+    ASSERT_EQ(doubleToChar.get(10.0), 'G');
+    ASSERT_EQ(doubleToChar.get(11.0), 'G');
+    ASSERT_EQ(doubleToChar.get(12.0), 'G');
+
+    ASSERT_EQ(doubleToDouble.get(4.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(5.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(6.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(7.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(8.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(9.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(10.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(11.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(12.0), 2.2);
+    ASSERT_EQ(doubleToDouble.get(13.0), 2.2);
+
+    // cout << "Finished testing get function" << endl;
 }
