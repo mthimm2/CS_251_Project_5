@@ -169,8 +169,14 @@ class mymap {
 
         // Base case, tree is totally empty
         if(this->root == nullptr) {
+            // The root should be the only node
+            this->root = toPut;
 
+            // size should = 1
+            ++this->size;
         }
+
+        // If the tree isn't empty
 
 
     }
