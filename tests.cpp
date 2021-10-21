@@ -627,51 +627,55 @@ TEST(mymap, get) {
     charToChar.put('d', 'a');
     charToChar.put('a', 'a');
     charToChar.put('a', 'a');
-    charToChar.put('a', 'x');
     ASSERT_EQ(charToChar.get('a'), 'a');
+    charToChar.put('a', 'x');
+ 
     ASSERT_EQ(charToChar.get('b'), 'a');
     ASSERT_EQ(charToChar.get('c'), 'a');
     ASSERT_EQ(charToChar.get('d'), 'a');
-    ASSERT_NE(charToChar.get('a'), 'x');
+    ASSERT_EQ(charToChar.get('a'), 'x');
 
     charToInt.put('a', 1);
+    ASSERT_EQ(charToInt.get('a'), 1);
     charToInt.put('b', 2);
     charToInt.put('c', 3);
     charToInt.put('d', 4);
     charToInt.put('a', 1);
     charToInt.put('a', 1);
     charToInt.put('a', 7);
-    ASSERT_EQ(charToInt.get('a'), 1);
+    
     ASSERT_EQ(charToInt.get('b'), 2);
     ASSERT_EQ(charToInt.get('c'), 3);
     ASSERT_EQ(charToInt.get('d'), 4);
-    ASSERT_NE(charToInt.get('a'), 7);
+    ASSERT_EQ(charToInt.get('a'), 7);
 
     charToString.put('a', "1.0");
+    ASSERT_EQ(charToString.get('a'), "1.0");
     charToString.put('b', "2.0");
     charToString.put('c', "3.0");
     charToString.put('d', "4.0");
     charToString.put('a', "1.0");
     charToString.put('a', "Gabagool");
     charToString.put('a', "Oh Marone!");
-    ASSERT_EQ(charToString.get('a'), "1.0");
+    
     ASSERT_EQ(charToString.get('b'), "2.0");
     ASSERT_EQ(charToString.get('c'), "3.0");
     ASSERT_EQ(charToString.get('d'), "4.0");
-    ASSERT_NE(charToString.get('a'), "Oh Marone!");
+    ASSERT_EQ(charToString.get('a'), "Oh Marone!");
 
     charToDouble.put('a', 1.0);
+    ASSERT_EQ(charToDouble.get('a'), 1.0);
     charToDouble.put('b', 2.0);
     charToDouble.put('c', 3.0);
     charToDouble.put('d', 4.0);
     charToDouble.put('a', 1.0);
     charToDouble.put('a', 1.0);
     charToDouble.put('a', 65.0);
-    ASSERT_EQ(charToDouble.get('a'), 1.0);
+    
     ASSERT_EQ(charToDouble.get('b'), 2.0);
     ASSERT_EQ(charToDouble.get('c'), 3.0);
     ASSERT_EQ(charToDouble.get('d'), 4.0);
-    ASSERT_NE(charToDouble.get('a'), 65.0);
+    ASSERT_EQ(charToDouble.get('a'), 65.0);
 
 
     // String keys
@@ -688,51 +692,55 @@ TEST(mymap, get) {
     // String to other tests
     stringToString.put("Oh Marone!", "Paulie");
     stringToString.put("Stugots", "Tony");
+    ASSERT_EQ(stringToString.get("Stugots"), "Tony");
     stringToString.put("Gabagool", "Silvio");
     stringToString.put("Let's get back to that Gabagool", "Melfi");
     stringToString.put("Christopher", "Adriana");
     stringToString.put("Stugots", "Carmela");
+    
     ASSERT_EQ(stringToString.get("Oh Marone!"), "Paulie");
-    ASSERT_EQ(stringToString.get("Stugots"), "Tony");
     ASSERT_EQ(stringToString.get("Gabagool"), "Silvio");
     ASSERT_EQ(stringToString.get("Let's get back to that Gabagool"), "Melfi");
-    ASSERT_NE(stringToString.get("Stugots"), "Carmela");
+    ASSERT_EQ(stringToString.get("Stugots"), "Carmela");
 
     stringToChar.put("Oh Marone!", 'P');
     stringToChar.put("Stugots", 'T');
+    ASSERT_EQ(stringToChar.get("Stugots"), 'T');
     stringToChar.put("Gabagool", 'S');
     stringToChar.put("Let's get back to that Gabagool", 'M');
     stringToChar.put("Christopher", 'A');
     stringToChar.put("Stugots", 'C');
+
     ASSERT_EQ(stringToChar.get("Oh Marone!"), 'P');
-    ASSERT_EQ(stringToChar.get("Stugots"), 'T');
     ASSERT_EQ(stringToChar.get("Gabagool"), 'S');
     ASSERT_EQ(stringToChar.get("Let's get back to that Gabagool"), 'M');
-    ASSERT_NE(stringToChar.get("Stugots"), 'C');
+    ASSERT_EQ(stringToChar.get("Stugots"), 'C');
 
     stringToInt.put("Oh Marone!", 1);
     stringToInt.put("Stugots", 2);
+    ASSERT_EQ(stringToInt.get("Stugots"), 2);
     stringToInt.put("Gabagool", 3);
     stringToInt.put("Let's get back to that Gabagool", 4);
     stringToInt.put("Christopher", 5);
     stringToInt.put("Stugots", 6);
+
     ASSERT_EQ(stringToInt.get("Oh Marone!"), 1);
-    ASSERT_EQ(stringToInt.get("Stugots"), 2);
     ASSERT_EQ(stringToInt.get("Gabagool"), 3);
     ASSERT_EQ(stringToInt.get("Let's get back to that Gabagool"), 4);
-    ASSERT_NE(stringToInt.get("Stugots"), 6);
+    ASSERT_EQ(stringToInt.get("Stugots"), 6);
 
     stringToDouble.put("Oh Marone!", 1.0);
     stringToDouble.put("Stugots", 2.0);
+    ASSERT_EQ(stringToDouble.get("Stugots"), 2.0);
     stringToDouble.put("Gabagool", 3.0);
     stringToDouble.put("Let's get back to that Gabagool", 4.0);
     stringToDouble.put("Christopher", 5.0);
     stringToDouble.put("Stugots", 6.0);
+
     ASSERT_EQ(stringToDouble.get("Oh Marone!"), 1.0);
-    ASSERT_EQ(stringToDouble.get("Stugots"), 2.0);
     ASSERT_EQ(stringToDouble.get("Gabagool"), 3.0);
     ASSERT_EQ(stringToDouble.get("Let's get back to that Gabagool"), 4.0);
-    ASSERT_NE(stringToDouble.get("Stugots"), 6.0);
+    ASSERT_EQ(stringToDouble.get("Stugots"), 6.0);
     
     // Double keys
     mymap<double, double> doubleToDouble;
@@ -816,5 +824,10 @@ TEST(mymap, toString) {
 }
 
 TEST(mymap, bracketOperator) {
+
+    mymap<int, int> testing;
+    ASSERT_EQ(testing[0], 0);
+    testing.put(1, 437);
+    ASSERT_EQ(testing[1], 437);
 
 }

@@ -174,6 +174,7 @@ class mymap {
         } else {
             // If the key is equal to the key at the current node, stop
             // No duplicates allowed.
+            cur->value = value;
             return;
         }
     }
@@ -263,9 +264,15 @@ class mymap {
   // Space complexity: O(1)
   //
   valueType operator[](keyType key) {
-    // TODO: write this function.
+    
+    // Check if the key is in the map
+    if(!contains(key)) {
+      // If it isn't insert the key with the default value for the given type
+      put(key, valueType());  
+    }
+    // In all cases, we return the value at the key, new or not.
+    return get(key);
 
-    return {};  // TODO: Update this return.
   }
 
   //
