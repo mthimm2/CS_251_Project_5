@@ -2,6 +2,7 @@
 #include <string>
 #include "mymap.h"
 #include "myrandom.h"
+#include <sstream>
 
 using namespace std;
 
@@ -821,6 +822,27 @@ TEST(mymap, toString) {
     string soln = "key: 2 value: -7426589\nkey: 3 value: 81\nkey: 4 value: 62\nkey: 5 value: 42\n";
     ASSERT_EQ(result, soln);
 
+    // int to int map with more nodes
+    mymap<int, int> bigOne;
+    stringstream dump("");
+
+    int n = randomInteger(0, 10000);
+    for(int x = 0; x < n; ++x) {
+        bigOne.put(x, x);
+        dump << "key: " << x << " value: " << x << "\n";
+    }
+    ASSERT_EQ(bigOne.toString(), dump.str());
+
+    // String to int map with many nodes
+    mymap<string, int> strtoi;
+    string blah = "a";
+    stringstream dumpTwo("");
+    for(int x = 0; x < n; ++x) {
+        strtoi.put(blah, x);
+        dumpTwo << "key: " << blah << " value: " << x << "\n";
+        blah.append("a");
+    }
+    ASSERT_EQ(strtoi.toString(), dumpTwo.str());
 }
 
 TEST(mymap, bracketOperator) {
@@ -830,4 +852,17 @@ TEST(mymap, bracketOperator) {
     testing.put(1, 437);
     ASSERT_EQ(testing[1], 437);
 
+    mymap<double, int> testingTwo;
+    for(int x = 0; x < 5000; ++x) {
+        int n = randomInteger(0,10000);
+        testingTwo.put((double) n, n);
+        ASSERT_EQ(testingTwo[(double) n], n);
+    }
+
+    mymap<int, char> anotherOne;
+    for(int x = 0; x < 10000; ++x) {
+        ASSERT_EQ(anotherOne[x], '\0');
+    }
+    anotherOne.put(5000, 'q');
+    ASSERT_EQ(anotherOne[5000], 'q');
 }

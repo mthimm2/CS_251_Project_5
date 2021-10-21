@@ -268,7 +268,8 @@ class mymap {
     // Check if the key is in the map
     if(!contains(key)) {
       // If it isn't insert the key with the default value for the given type
-      put(key, valueType());  
+      put(key, valueType());
+      return valueType();  
     }
     // In all cases, we return the value at the key, new or not.
     return get(key);
