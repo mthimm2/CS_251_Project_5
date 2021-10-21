@@ -800,3 +800,21 @@ TEST(mymap, get) {
 
     // cout << "Finished testing get function" << endl;
 }
+
+TEST(mymap, toString) {
+
+    // Int to int test
+    mymap<int, int> testing;
+    testing.put(5, 42);
+    testing.put(3, 81);
+    testing.put(4, 62);
+    testing.put(2, -7426589);
+    string result = testing.toString();
+    string soln = "key: 2 value: -7426589\nkey: 3 value: 81\nkey: 4 value: 62\nkey: 5 value: 42\n";
+    ASSERT_EQ(result, soln);
+
+}
+
+TEST(mymap, bracketOperator) {
+
+}

@@ -1,6 +1,6 @@
 build:
 	rm -f tests.exe
-	g++ tests.cpp -o tests.exe -lgtest -lgtest_main -lpthread
+	g++ -g -Wall tests.cpp -o tests.exe -lgtest -lgtest_main -lpthread
 	
 run:
 	./tests.exe

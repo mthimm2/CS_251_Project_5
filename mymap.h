@@ -133,10 +133,10 @@ class mymap {
     NODE* toPut = new NODE();
     toPut->key = key;
     toPut->value = value;
-    toPut->left = nullptr;
-    toPut->right = nullptr;
-    toPut->nL = 0;
-    toPut->nR = 0;
+    // toPut->left = nullptr;
+    // toPut->right = nullptr;
+    // toPut->nL = 0;
+    // toPut->nR = 0;
     toPut->isThreaded = false;
 
     // Base case, tree is totally empty
@@ -302,6 +302,40 @@ class mymap {
   //
   iterator end() { return iterator(nullptr); }
 
+  /*
+    toStringRecurse:
+
+    Helper function for toString.
+
+    Prints the tree recursively, in key order.
+    Corresponding values are also printed, alongside the keys.
+
+    Time Complexity: O(n), where n is total number of nodes in the tree.
+  */
+  void toStringRecurse(stringstream& stringSoFar, NODE* cur) { 
+
+    // If the node is a nullptr, return.
+    if(cur == nullptr) {
+      return;
+    }
+
+    // Walk as far left as we can on for the current subtree
+    if(cur->left != nullptr) {
+      toStringRecurse(stringSoFar, cur->left);
+    }
+
+    // Once we're as far down as we can go, append the key and value substring to the mother string
+    stringSoFar << "key: " << cur->key << " value: " << cur->value << "\n";
+    // stringSoFar.append("value: ");
+    // stringSoFar.append(cur->value);
+    // stringSoFar.append("\n");
+
+    // Then, walk as far right as we can.
+    if(cur->right != nullptr) {
+      toStringRecurse(stringSoFar, cur->right);
+    }
+  }
+
   //
   // toString:
   //
@@ -312,9 +346,16 @@ class mymap {
   // threaded, self-balancing BST
   //
   string toString() {
-    // TODO: write this function.
+    
+    // Start with an empty string.
+    string mymapAsString = "";
 
-    return {};  // TODO: Update this return.
+    // Turn the string into a stringstream
+    stringstream ss(mymapAsString);
+
+    toStringRecurse(ss, this->root);
+    mymapAsString = ss.str();
+    return mymapAsString;
   }
 
   //
