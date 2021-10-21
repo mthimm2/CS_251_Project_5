@@ -133,10 +133,6 @@ class mymap {
     NODE* toPut = new NODE();
     toPut->key = key;
     toPut->value = value;
-    // toPut->left = nullptr;
-    // toPut->right = nullptr;
-    // toPut->nL = 0;
-    // toPut->nR = 0;
     toPut->isThreaded = false;
 
     // Base case, tree is totally empty
@@ -270,10 +266,10 @@ class mymap {
       // If it isn't insert the key with the default value for the given type
       put(key, valueType());
       return valueType();  
+    } else {
+      // If the key is in the map, return its value.
+      return get(key);
     }
-    // In all cases, we return the value at the key, new or not.
-    return get(key);
-
   }
 
   //
