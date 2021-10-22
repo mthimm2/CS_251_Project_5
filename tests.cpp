@@ -355,6 +355,276 @@ TEST(mymap, put) {
     // cout <<"Finished testing put function" << endl;
 }
 
+TEST(mymap, contains) {
+
+    mymap<int, int> intToInt;
+    mymap<int, string> intToString;
+    mymap<int, double> intToDouble;
+    mymap<int, char> intToChar;
+
+    // Int to other tests
+    for(int x = 0; x < 10; ++x) {
+        intToInt.put(x, x);
+        intToString.put(x, "Gabagool");
+        intToChar.put(x, 'G');
+        intToDouble.put(x, 2.2);
+    }
+
+    // Inserted 10 elements, so expect a size of 10
+    ASSERT_EQ(intToInt.Size(), 10);
+    ASSERT_EQ(intToString.Size(), 10);
+    ASSERT_EQ(intToChar.Size(), 10);
+    ASSERT_EQ(intToDouble.Size(), 10);
+    
+    // Int to int
+    ASSERT_TRUE(intToInt.contains(0));
+    ASSERT_TRUE(intToInt.contains(1));
+    ASSERT_TRUE(intToInt.contains(2));
+    ASSERT_TRUE(intToInt.contains(3));
+    ASSERT_TRUE(intToInt.contains(4));
+    ASSERT_TRUE(intToInt.contains(5));
+    ASSERT_TRUE(intToInt.contains(6));
+    ASSERT_TRUE(intToInt.contains(7));
+    ASSERT_TRUE(intToInt.contains(8));
+    ASSERT_TRUE(intToInt.contains(9));
+   
+    // Int to char
+    ASSERT_TRUE(intToChar.contains(0));
+    ASSERT_TRUE(intToChar.contains(1));
+    ASSERT_TRUE(intToChar.contains(2));
+    ASSERT_TRUE(intToChar.contains(3));
+    ASSERT_TRUE(intToChar.contains(4));
+    ASSERT_TRUE(intToChar.contains(5));
+    ASSERT_TRUE(intToChar.contains(6));
+    ASSERT_TRUE(intToChar.contains(7));
+    ASSERT_TRUE(intToChar.contains(8));
+    ASSERT_TRUE(intToChar.contains(9));
+
+    // Int to string
+    ASSERT_TRUE(intToString.contains(0));
+    ASSERT_TRUE(intToString.contains(1));
+    ASSERT_TRUE(intToString.contains(2));
+    ASSERT_TRUE(intToString.contains(3));
+    ASSERT_TRUE(intToString.contains(4));
+    ASSERT_TRUE(intToString.contains(5));
+    ASSERT_TRUE(intToString.contains(6));
+    ASSERT_TRUE(intToString.contains(7));
+    ASSERT_TRUE(intToString.contains(8));
+    ASSERT_TRUE(intToString.contains(9));
+
+    // Int to double
+    ASSERT_TRUE(intToDouble.contains(0));
+    ASSERT_TRUE(intToDouble.contains(1));
+    ASSERT_TRUE(intToDouble.contains(2));
+    ASSERT_TRUE(intToDouble.contains(3));
+    ASSERT_TRUE(intToDouble.contains(4));
+    ASSERT_TRUE(intToDouble.contains(5));
+    ASSERT_TRUE(intToDouble.contains(6));
+    ASSERT_TRUE(intToDouble.contains(7));
+    ASSERT_TRUE(intToDouble.contains(8));
+    ASSERT_TRUE(intToDouble.contains(9));
+    
+
+    // Char to something maps
+    mymap<char, char> charToChar;
+    mymap<char, int> charToInt;
+    mymap<char, double> charToDouble;
+    mymap<char, string> charToString;
+
+    // Char to other tests
+    charToChar.put('a', 'a');
+    ASSERT_TRUE(charToChar.contains('a'));
+    charToChar.put('b', 'a');
+    ASSERT_TRUE(charToChar.contains('b'));
+    charToChar.put('c', 'a');
+    ASSERT_TRUE(charToChar.contains('c'));
+    charToChar.put('d', 'a');
+    ASSERT_TRUE(charToChar.contains('d'));
+    charToChar.put('a', 'a');
+    charToChar.put('a', 'a');
+    charToChar.put('a', 'a');
+    ASSERT_FALSE(charToChar.Size() >= 5);
+
+    charToInt.put('a', 1);
+    ASSERT_TRUE(charToInt.contains('a'));
+    charToInt.put('b', 2);
+    ASSERT_TRUE(charToInt.contains('b'));
+    charToInt.put('c', 3);
+    ASSERT_TRUE(charToInt.contains('c'));
+    charToInt.put('d', 4);
+    ASSERT_TRUE(charToInt.contains('d'));
+    charToInt.put('a', 1);
+    charToInt.put('a', 1);
+    charToInt.put('a', 1);
+    ASSERT_FALSE(charToInt.Size() >= 5);
+
+    charToString.put('a', "1.0");
+    ASSERT_TRUE(charToString.contains('a'));
+    charToString.put('b', "2.0");
+    ASSERT_TRUE(charToString.contains('b'));
+    charToString.put('c', "3.0");
+    ASSERT_TRUE(charToString.contains('c'));
+    charToString.put('d', "4.0");
+    ASSERT_TRUE(charToString.contains('d'));
+    charToString.put('a', "1.0");
+    charToString.put('a', "Gabagool");
+    charToString.put('a', "Oh Marone!");
+    ASSERT_FALSE(charToString.Size() >= 5);
+
+    charToDouble.put('a', 1.0);
+    ASSERT_TRUE(charToDouble.contains('a'));
+    charToDouble.put('b', 2.0);
+    ASSERT_TRUE(charToDouble.contains('b'));
+    charToDouble.put('c', 3.0);
+    ASSERT_TRUE(charToDouble.contains('c'));
+    charToDouble.put('d', 4.0);
+    ASSERT_TRUE(charToDouble.contains('d'));
+    charToDouble.put('a', 1.0);
+    charToDouble.put('a', 1.0);
+    charToDouble.put('a', 1.0);
+    ASSERT_FALSE(charToDouble.Size() >= 5);
+
+    // Expect a size of only 4
+    ASSERT_EQ(charToChar.Size(), 4);
+    ASSERT_EQ(charToInt.Size(), 4);
+    ASSERT_EQ(charToString.Size(), 4);
+    ASSERT_EQ(charToDouble.Size(), 4);
+
+    // These all had the same thing inserted, so these keys should be present
+    ASSERT_TRUE(charToChar.contains('c'));
+    ASSERT_TRUE(charToInt.contains('a'));
+    ASSERT_TRUE(charToDouble.contains('d'));
+    ASSERT_TRUE(charToString.contains('b'));
+
+    // String keys
+    mymap<string, string> stringToString;
+    mymap<string, char> stringToChar;
+    mymap<string, double> stringToDouble;
+    mymap<string, int> stringToInt;
+
+    // String to other tests
+    stringToString.put("Oh Marone!", "Paulie");
+    ASSERT_TRUE(stringToString.contains("Oh Marone!"));
+    stringToString.put("Stugots", "Tony");
+    ASSERT_TRUE(stringToString.contains("Stugots"));
+    stringToString.put("Gabagool", "Silvio");
+    ASSERT_TRUE(stringToString.contains("Gabagool"));
+    stringToString.put("Let's get back to that Gabagool", "Melfi");
+    ASSERT_TRUE(stringToString.contains("Let's get back to that Gabagool"));
+    stringToString.put("Christopher", "Adriana");
+    ASSERT_TRUE(stringToString.contains("Christopher"));
+    stringToString.put("Stugots", "Carmela");
+    ASSERT_TRUE(stringToString.contains("Stugots"));
+    ASSERT_FALSE(stringToString.Size() >= 6);
+
+    stringToChar.put("Oh Marone!", 'P');
+    ASSERT_TRUE(stringToChar.contains("Oh Marone!"));
+    stringToChar.put("Stugots", 'T');
+    ASSERT_TRUE(stringToChar.contains("Stugots"));
+    stringToChar.put("Gabagool", 'S');
+    ASSERT_TRUE(stringToChar.contains("Gabagool"));
+    stringToChar.put("Let's get back to that Gabagool", 'M');
+    ASSERT_TRUE(stringToChar.contains("Let's get back to that Gabagool"));
+    stringToChar.put("Christopher", 'A');
+    ASSERT_TRUE(stringToChar.contains("Christopher"));
+    stringToChar.put("Stugots", 'C');
+    ASSERT_TRUE(stringToChar.contains("Stugots"));
+    ASSERT_FALSE(stringToChar.Size() >= 6);
+
+    stringToInt.put("Oh Marone!", 1);
+    ASSERT_TRUE(stringToInt.contains("Oh Marone!"));
+    stringToInt.put("Stugots", 2);
+    ASSERT_TRUE(stringToInt.contains("Stugots"));
+    stringToInt.put("Gabagool", 3);
+    ASSERT_TRUE(stringToInt.contains("Gabagool"));
+    stringToInt.put("Let's get back to that Gabagool", 4);
+    ASSERT_TRUE(stringToInt.contains("Let's get back to that Gabagool"));
+    stringToInt.put("Christopher", 5);
+    ASSERT_TRUE(stringToInt.contains("Christopher"));
+    stringToInt.put("Stugots", 6);
+    ASSERT_TRUE(stringToInt.contains("Stugots"));
+    ASSERT_FALSE(stringToInt.Size() >= 6);
+
+    stringToDouble.put("Oh Marone!", 1.0);
+    ASSERT_TRUE(stringToDouble.contains("Oh Marone!"));
+    stringToDouble.put("Stugots", 2.0);
+    ASSERT_TRUE(stringToDouble.contains("Stugots"));
+    stringToDouble.put("Gabagool", 3.0);
+    ASSERT_TRUE(stringToDouble.contains("Gabagool"));
+    stringToDouble.put("Let's get back to that Gabagool", 4.0);
+    ASSERT_TRUE(stringToDouble.contains("Let's get back to that Gabagool"));
+    stringToDouble.put("Christopher", 5.0);
+    ASSERT_TRUE(stringToDouble.contains("Christopher"));
+    stringToDouble.put("Stugots", 6.0);
+    ASSERT_TRUE(stringToDouble.contains("Stugots"));
+    ASSERT_FALSE(stringToDouble.Size() >= 6);
+
+    // Double keys
+    mymap<double, double> doubleToDouble;
+    mymap<double, string> doubleToString;
+    mymap<double, int> doubleToInt;
+    mymap<double, char> doubleToChar;
+
+    // Double to other tests
+    for(int x = 0; x < 10; ++x) {
+        doubleToInt.put((double)(x + 1), x);
+        doubleToString.put((double)(x + 2), "Gabagool");
+        doubleToChar.put((double)(x + 3), 'G');
+        doubleToDouble.put((double)(x + 4), 2.2);
+    }
+
+    // Sizes
+    ASSERT_EQ(doubleToDouble.Size(), 10);
+    ASSERT_EQ(doubleToInt.Size(), 10);
+    ASSERT_EQ(doubleToString.Size(), 10);
+    ASSERT_EQ(doubleToChar.Size(), 10);
+
+    // Contains stuff
+    ASSERT_TRUE(doubleToInt.contains(1.0));
+    ASSERT_TRUE(doubleToInt.contains(2.0));
+    ASSERT_TRUE(doubleToInt.contains(3.0));
+    ASSERT_TRUE(doubleToInt.contains(4.0));
+    ASSERT_TRUE(doubleToInt.contains(5.0));
+    ASSERT_TRUE(doubleToInt.contains(6.0));
+    ASSERT_TRUE(doubleToInt.contains(7.0));
+    ASSERT_TRUE(doubleToInt.contains(8.0));
+    ASSERT_TRUE(doubleToInt.contains(9.0));
+    ASSERT_TRUE(doubleToInt.contains(10.0));
+
+    ASSERT_TRUE(doubleToString.contains(2.0));
+    ASSERT_TRUE(doubleToString.contains(3.0));
+    ASSERT_TRUE(doubleToString.contains(4.0));
+    ASSERT_TRUE(doubleToString.contains(5.0));
+    ASSERT_TRUE(doubleToString.contains(6.0));
+    ASSERT_TRUE(doubleToString.contains(7.0));
+    ASSERT_TRUE(doubleToString.contains(8.0));
+    ASSERT_TRUE(doubleToString.contains(9.0));
+    ASSERT_TRUE(doubleToString.contains(10.0));
+    ASSERT_TRUE(doubleToString.contains(11.0));
+
+    ASSERT_TRUE(doubleToChar.contains(3.0));
+    ASSERT_TRUE(doubleToChar.contains(4.0));
+    ASSERT_TRUE(doubleToChar.contains(5.0));
+    ASSERT_TRUE(doubleToChar.contains(6.0));
+    ASSERT_TRUE(doubleToChar.contains(7.0));
+    ASSERT_TRUE(doubleToChar.contains(8.0));
+    ASSERT_TRUE(doubleToChar.contains(9.0));
+    ASSERT_TRUE(doubleToChar.contains(10.0));
+    ASSERT_TRUE(doubleToChar.contains(11.0));
+    ASSERT_TRUE(doubleToChar.contains(12.0));
+
+    ASSERT_TRUE(doubleToDouble.contains(4.0));
+    ASSERT_TRUE(doubleToDouble.contains(5.0));
+    ASSERT_TRUE(doubleToDouble.contains(6.0));
+    ASSERT_TRUE(doubleToDouble.contains(7.0));
+    ASSERT_TRUE(doubleToDouble.contains(8.0));
+    ASSERT_TRUE(doubleToDouble.contains(9.0));
+    ASSERT_TRUE(doubleToDouble.contains(10.0));
+    ASSERT_TRUE(doubleToDouble.contains(11.0));
+    ASSERT_TRUE(doubleToDouble.contains(12.0));
+    ASSERT_TRUE(doubleToDouble.contains(13.0));
+}
+
 TEST(mymap, size) {
 
     // cout << "Testing size function" << endl;

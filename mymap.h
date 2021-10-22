@@ -24,6 +24,42 @@ class mymap {
   NODE* root;  // pointer to root node of the BST
   int size;    // # of key/value pairs in the mymap
 
+  /*
+    toStringRecurse:
+
+    Helper function for toString.
+
+    Prints the tree recursively, in key order.
+    Corresponding values are also printed, alongside the keys.
+
+    Time Complexity: O(n), where n is total number of nodes in the tree.
+  */
+  void toStringRecurse(stringstream& stringSoFar, NODE* cur) { 
+
+    // If the node is a nullptr, return.
+    if(cur == nullptr) {
+      return;
+    }
+
+    // Walk as far left as we can on for the current subtree
+    if(cur->left != nullptr) {
+      toStringRecurse(stringSoFar, cur->left);
+    }
+
+    // Once we're as far down as we can go, append the key and value substring to the mother string
+    stringSoFar << "key: " << cur->key << " value: " << cur->value << "\n";
+    // stringSoFar.append("value: ");
+    // stringSoFar.append(cur->value);
+    // stringSoFar.append("\n");
+
+    // Then, walk as far right as we can.
+    // However, we now need to beware of threads walking us in a circle.
+    // Therefore, we should check if the node is threaded and stop recursing if that's the case.
+    if(cur->right != nullptr && cur->isThreaded == false) {
+      toStringRecurse(stringSoFar, cur->right);
+    }
+  }
+
   //
   // iterator:
   // This iterator is used so that mymap will work with a foreach loop.
@@ -213,7 +249,7 @@ class mymap {
         if(key < cur->key) {
             cur = cur->left;
         } else if (key > cur->key) {
-            cur = cur->right;
+            cur = (cur->isThreaded) ? nullptr : cur->right;
         } else {
             // If the key is equal, return true
             return true;
@@ -246,7 +282,7 @@ class mymap {
         if(key < cur->key) {
             cur = cur->left;
         } else if (key > cur->key) {
-            cur = cur->right;
+            cur = (cur->isThreaded) ? nullptr : cur->right;
         } else {
             // If the key is equal, return the value at that node
             return cur->value;
@@ -313,42 +349,6 @@ class mymap {
   // Time Complexity: O(1)
   //
   iterator end() { return iterator(nullptr); }
-
-  /*
-    toStringRecurse:
-
-    Helper function for toString.
-
-    Prints the tree recursively, in key order.
-    Corresponding values are also printed, alongside the keys.
-
-    Time Complexity: O(n), where n is total number of nodes in the tree.
-  */
-  void toStringRecurse(stringstream& stringSoFar, NODE* cur) { 
-
-    // If the node is a nullptr, return.
-    if(cur == nullptr) {
-      return;
-    }
-
-    // Walk as far left as we can on for the current subtree
-    if(cur->left != nullptr) {
-      toStringRecurse(stringSoFar, cur->left);
-    }
-
-    // Once we're as far down as we can go, append the key and value substring to the mother string
-    stringSoFar << "key: " << cur->key << " value: " << cur->value << "\n";
-    // stringSoFar.append("value: ");
-    // stringSoFar.append(cur->value);
-    // stringSoFar.append("\n");
-
-    // Then, walk as far right as we can.
-    // However, we now need to beware of threads walking us in a circle.
-    // Therefore, we should check if the node is threaded and stop recursing if that's the case.
-    if(cur->right != nullptr && cur->isThreaded == false) {
-      toStringRecurse(stringSoFar, cur->right);
-    }
-  }
 
   //
   // toString:
