@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stack>
 
 using namespace std;
 
@@ -118,6 +119,10 @@ class mymap {
     // TODO: write this function.
   }
 
+  void putWalk(NODE*& cur, NODE*& prev, keyType& key, valueType& value) {
+
+  }
+
   //
   // put:
   //
@@ -133,13 +138,16 @@ class mymap {
     NODE* toPut = new NODE();
     toPut->key = key;
     toPut->value = value;
+    toPut->left = nullptr;
+    toPut->right = nullptr;
     toPut->isThreaded = false;
 
     // Base case, tree is totally empty
     if (this->root == nullptr) {
       // The root should be the only node
       this->root = toPut;
-
+      this->root->isThreaded = true;
+      
       // size should = 1
       ++this->size;
 
@@ -150,38 +158,38 @@ class mymap {
     // Nodes to keep track of where we are.
     NODE* cur = this->root;
     NODE* prev = nullptr;
-
-    // Flag to indicate insertion spot
-    bool keyLessThanCurrent = true;
-
+    
     // If the tree isn't empty, walk to the node's insertion location
     while (cur != nullptr) {
-        // Tree is in order of keys, not values
-        if(key < cur->key) {
-            // If the key is smaller than the key at the current node, walk left
-            prev = cur; 
-            cur = cur->left;
-            keyLessThanCurrent = true;
-        } else if(key > cur->key) {
-            // If the key is larger than the key at the current node, walk right
-            prev = cur;
-            cur = cur->right;
-            keyLessThanCurrent = false;
-        } else {
-            // If the key is equal to the key at the current node, stop
-            // No duplicates allowed.
-            cur->value = value;
-            return;
-        }
+      // Tree is in order of keys, not values
+      if(key < cur->key) {
+          // If the key is smaller than the key at the current node, walk left
+          prev = cur; 
+          cur = cur->left;
+      } else if(key > cur->key) {
+          // If the key is larger than the key at the current node, walk right
+          prev = cur;
+          cur = (cur->isThreaded) ? nullptr : cur->right;
+      } else {
+          // If the key is equal to the key at the current node, stop
+          // No duplicates allowed.
+          cur->value = value;
+          return;
+      }
     }
     // If we made it to a new leaf location, increment size.
     ++this->size;
 
     // Insert the node to the correct side of the former leaf.
-    if(keyLessThanCurrent) {
+    if(key < prev->key) {
+        toPut->right = prev;
         prev->left = toPut;
+        toPut->isThreaded = true;
     } else {
+        toPut->right = prev->right;
         prev->right = toPut;
+        toPut->isThreaded = true;
+        prev->isThreaded = false;
     }
   }
 
@@ -335,7 +343,9 @@ class mymap {
     // stringSoFar.append("\n");
 
     // Then, walk as far right as we can.
-    if(cur->right != nullptr) {
+    // However, we now need to beware of threads walking us in a circle.
+    // Therefore, we should check if the node is threaded and stop recursing if that's the case.
+    if(cur->right != nullptr && cur->isThreaded == false) {
       toStringRecurse(stringSoFar, cur->right);
     }
   }
@@ -359,6 +369,7 @@ class mymap {
 
     toStringRecurse(ss, this->root);
     mymapAsString = ss.str();
+
     return mymapAsString;
   }
 
