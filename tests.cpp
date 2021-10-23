@@ -3,6 +3,7 @@
 #include "mymap.h"
 #include "myrandom.h"
 #include <sstream>
+#include <map>
 
 using namespace std;
 
@@ -1135,4 +1136,48 @@ TEST(mymap, bracketOperator) {
     }
     anotherOne.put(5000, 'q');
     ASSERT_EQ(anotherOne[5000], 'q');
+}
+
+TEST(mymap, iteratorBegin) {
+
+    mymap<int, int> testing;
+    testing.put(2, 2);
+    testing.put(1, 1);
+    testing.put(3, 3);
+    testing.put(0, 0);
+
+}
+
+TEST(mymap, operatorPlusPlus) {
+
+    mymap<int, int> testing;
+    testing.put(2, 2);
+    testing.put(1, 1);
+    testing.put(3, 3);
+    testing.put(0, 0);
+
+    int order[] = {0, 1, 2, 3};
+
+    int i = 0;
+
+    for(auto key : testing) {
+        ASSERT_EQ(order[i++], key);
+    }
+
+    mymap<int, int> bigOne;
+    map<int, int> correctBigOne;
+
+    for(int x = 0; x < 10000; ++x) {
+        int n = randomInteger(0, 10000);
+        bigOne.put(n, n);
+        correctBigOne[n] = n;
+    }
+
+    i = 0;
+    map<int, int>::iterator iter = correctBigOne.begin();
+    for(auto key : bigOne) {
+        ASSERT_EQ(iter->second, bigOne.get(key));
+        ++iter;
+    }
+
 }

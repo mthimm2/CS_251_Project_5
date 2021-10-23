@@ -86,9 +86,34 @@ class mymap {
     // O(logN)
     //
     iterator operator++() {
-      // TODO: write this function.
+      
+      if(curr == nullptr) {
+        return iterator(nullptr);
+        
+        // If the current node is threaded and has a valid right pointer, walk right
+      } else if(curr->isThreaded && curr->right != nullptr) {
+        curr = curr->right;
+        return iterator(curr);
+        
+        // If the current node isn't threaded and has a right node...
+      } else if (!curr->isThreaded && curr->right != nullptr) {
+        
+        // Walk right by one.
+        curr = curr->right;
+        
+        // However, now we need to walk all the way left to use our threads.
+        while(curr->left != nullptr) {
+          curr = curr->left;
+        }
+        return iterator(curr);
+        // Lastly, if we're back at the true last node in the tree, bow out.
+      } else { //(curr->isThreaded && curr->right != nullptr) {
+        curr = nullptr;
+        return iterator(curr);
+      }
 
-      return iterator(nullptr);  // TODO: Update this return.
+
+      // return iterator(nullptr);  // TODO: Update this return.
     }
   };
 
@@ -335,9 +360,18 @@ class mymap {
   // threaded, self-balancing BST
   //
   iterator begin() {
-    // TODO: write this function.
 
-    return iterator(nullptr);  // TODO: Update this return.
+    // Start from the root
+    NODE* cur = this->root;
+
+    // Smallest thing in the tree, in terms of key order, is all the way to the left
+    // Walk down to the leftmost node
+    while(cur->left != nullptr) {
+      cur = cur->left;
+    }
+
+    // Return the iterator to that lower left node
+    return iterator(cur);
   }
 
   //
