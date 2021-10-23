@@ -1140,6 +1140,7 @@ TEST(mymap, bracketOperator) {
 
 TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
 
+    // Trivial case test
     mymap<int, int> testing;
     testing.put(2, 2);
     testing.put(1, 1);
@@ -1154,21 +1155,25 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
         ASSERT_EQ(order[i++], key);
     }
 
+    // Larger maps of trivial data types
     mymap<int, int> bigOne;
     map<int, int> correctBigOne;
 
+    // Insert elements
     for(int x = 0; x < 10000; ++x) {
         int n = randomInteger(0, 10000);
         bigOne.put(n, n);
         correctBigOne[n] = n;
     }
 
+    // Traverse and verify.
     map<int, int>::iterator iter = correctBigOne.begin();
     for(auto key : bigOne) {
         ASSERT_EQ(iter->second, bigOne.get(key));
         ++iter;
     }
 
+    // A map with string as the key
     mymap<string, int> strToInt;
     map<string, int> correctStrToInt;
     strToInt.put("Bob", 1);
@@ -1181,24 +1186,184 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
     correctStrToInt["Sam"] = 1;
     correctStrToInt["David"] = 1;
     correctStrToInt["Alex"] = 1;
+
+    // Traverse and verify
     map<string, int>::iterator iter2 = correctStrToInt.begin();
     for(auto key : strToInt) {
         ASSERT_EQ(iter2->second, strToInt.get(key));
         ++iter2;
     }
+
+    // Check the beginning of the mymap
     ASSERT_EQ("Alex", *strToInt.begin());
+    auto x = correctStrToInt.begin();
+    ASSERT_EQ("Alex", x->first);
 }
 
-TEST (mymap, destructorTest) {
-    mymap<int, int> test;
-    test.put(1,1);
-    mymap<double, int> test2;
-    test2.put(1.0,1);
-    mymap<char, int> test3;
-    test3.put('a', 2);
-    mymap<char, char> test4;
-    test4.put('a', 'a');
-    mymap<string, char> test5;
-    test5.put("hey", 'a');
-    test5.put("hey", 'b');
+TEST (mymap, copyAssignmentOperator) {
+
+    // Small initial test of a trivial case.
+    mymap<int, int> original;
+    original.put(2,2);
+    original.put(1,1);
+    original.put(3,3);
+
+    // Use the copy assignment operator to bring in a new mymap
+    mymap<int, int> clone = original;
+
+    // Make sure all of the keys match
+    for(int x = 0; x < clone.Size(); ++x) {
+        ASSERT_EQ(original[x], clone[x]);
+    }
+
+    // Another map but with doubles as the keys
+    mymap<double, int> another;
+
+    // 100 elements into a tree
+    for(int x = 0; x < 1000; ++x) {
+        int n = randomInteger(0, 1000);
+        another.put((double) n, n);
+    }
+
+    // Verify the larger tree
+    mymap<double, int> anotherClone = another;
+    for(int x = 0; x < anotherClone.Size(); ++x) {
+        ASSERT_EQ(anotherClone[x], another[x]);
+    }
+
+    // Make sure that updates aren't sabotaging the maps or making extra copies of things
+    mymap<int, double> anotherOne;
+    for(int x = 0; x < 1000; ++x) {
+        int n = randomInteger(0, 5);
+        anotherOne.put(n,(double) n);
+    }
+    //ASSERT_EQ(anotherOne.Size(), 5);
+    mymap<int, double> miniMe = anotherOne;
+    for(int x = 0; x < miniMe.Size(); ++x) {
+        ASSERT_EQ(miniMe[x], anotherOne[x]);
+    }
+
+    // Check that empty copies don't tank us
+    mymap<string, char> emptyOnPurpose;
+    mymap<string, char> emptyClone = emptyOnPurpose;
+
+    // Characters as strings
+    mymap<char, string> charAsKey;
+    charAsKey.put('q', "Gabagool");
+    charAsKey.put('a', "Gabagool");
+    charAsKey.put('t', "Gabagool");
+    charAsKey.put('s', "Gabagool");
+    charAsKey.put('x', "Gabagool");
+    charAsKey.put('b', "Gabagool");
+    charAsKey.put('m', "Gabagool");
+    charAsKey.put('z', "Gabagool");
+    charAsKey.put('y', "Gabagool");
+    
+    // make the copy and verify the contents
+    mymap<char, string> charClone = charAsKey;
+    ASSERT_EQ(charAsKey.toString(), charAsKey.toString());
+
+    // Time to make one that's MASSIF
+    mymap<double, double> bigKahuna;
+    for(int x = 0; x < 1000000; ++x) {
+        int n = randomInteger(0,1000000);
+        bigKahuna.put((double) n, (double) n);
+    }
+
+    // The copy
+    mymap<double, double> sonOfBigKahuna = bigKahuna;
+
+    //index
+    int i = 0;
+
+    // Highly irresponsible syntax
+    for(auto key : sonOfBigKahuna) {
+        ASSERT_EQ(sonOfBigKahuna[i], bigKahuna[i]);
+        ++i;
+    }
+}
+
+TEST(mymap, copyConstructor) {
+
+    // Same tests as above, just with the copy constructor instead
+
+    // Small initial test of a trivial case.
+    mymap<int, int> original;
+    original.put(2,2);
+    original.put(1,1);
+    original.put(3,3);
+
+    // Use the copy assignment operator to bring in a new mymap
+    mymap<int, int> clone(original);
+
+    // Make sure all of the keys match
+    for(int x = 0; x < clone.Size(); ++x) {
+        ASSERT_EQ(original[x], clone[x]);
+    }
+
+    // Another map but with doubles as the keys
+    mymap<double, int> another;
+
+    // 100 elements into a tree
+    for(int x = 0; x < 1000; ++x) {
+        int n = randomInteger(0, 1000);
+        another.put((double) n, n);
+    }
+
+    // Verify the larger tree
+    mymap<double, int> anotherClone = another;
+    for(int x = 0; x < anotherClone.Size(); ++x) {
+        ASSERT_EQ(anotherClone[x], another[x]);
+    }
+
+    // Make sure that updates aren't sabotaging the maps or making extra copies of things
+    mymap<int, double> anotherOne;
+    for(int x = 0; x < 1000; ++x) {
+        int n = randomInteger(0, 5);
+        anotherOne.put(n,(double) n);
+    }
+    //ASSERT_EQ(anotherOne.Size(), 5);
+    mymap<int, double> miniMe(anotherOne);
+    for(int x = 0; x < miniMe.Size(); ++x) {
+        ASSERT_EQ(miniMe[x], anotherOne[x]);
+    }
+
+    // Check that empty copies don't tank us
+    mymap<string, char> emptyOnPurpose;
+    mymap<string, char> emptyClone(emptyOnPurpose);
+
+    // Characters as strings
+    mymap<char, string> charAsKey;
+    charAsKey.put('q', "Gabagool");
+    charAsKey.put('a', "Gabagool");
+    charAsKey.put('t', "Gabagool");
+    charAsKey.put('s', "Gabagool");
+    charAsKey.put('x', "Gabagool");
+    charAsKey.put('b', "Gabagool");
+    charAsKey.put('m', "Gabagool");
+    charAsKey.put('z', "Gabagool");
+    charAsKey.put('y', "Gabagool");
+    
+    // make the copy and verify the contents
+    mymap<char, string> charClone(charAsKey);
+    ASSERT_EQ(charAsKey.toString(), charAsKey.toString());
+
+    // Time to make one that's MASSIF
+    mymap<double, double> bigKahuna;
+    for(int x = 0; x < 1000000; ++x) {
+        int n = randomInteger(0,1000000);
+        bigKahuna.put((double) n, (double) n);
+    }
+
+    // The copy
+    mymap<double, double> sonOfBigKahuna(bigKahuna);
+
+    //index
+    int i = 0;
+
+    // Highly irresponsible syntax
+    for(auto key : sonOfBigKahuna) {
+        ASSERT_EQ(sonOfBigKahuna[i], bigKahuna[i]);
+        ++i;
+    }
 }
