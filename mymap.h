@@ -34,19 +34,19 @@ class mymap {
 
     Time Complexity: O(n), where n is total number of nodes in the tree.
   */
-  void toStringRecurse(stringstream& stringSoFar, NODE* cur) { 
-
+  void toStringRecurse(stringstream& stringSoFar, NODE* cur) {
     // If the node is a nullptr, return.
-    if(cur == nullptr) {
+    if (cur == nullptr) {
       return;
     }
 
     // Walk as far left as we can on for the current subtree
-    if(cur->left != nullptr) {
+    if (cur->left != nullptr) {
       toStringRecurse(stringSoFar, cur->left);
     }
 
-    // Once we're as far down as we can go, append the key and value substring to the mother string
+    // Once we're as far down as we can go, append the key and value substring
+    // to the mother string
     stringSoFar << "key: " << cur->key << " value: " << cur->value << "\n";
     // stringSoFar.append("value: ");
     // stringSoFar.append(cur->value);
@@ -54,19 +54,19 @@ class mymap {
 
     // Then, walk as far right as we can.
     // However, we now need to beware of threads walking us in a circle.
-    // Therefore, we should check if the node is threaded and stop recursing if that's the case.
-    if(cur->right != nullptr && cur->isThreaded == false) {
+    // Therefore, we should check if the node is threaded and stop recursing if
+    // that's the case.
+    if (cur->right != nullptr && cur->isThreaded == false) {
       toStringRecurse(stringSoFar, cur->right);
     }
   }
 
   void _clear(NODE* cur) {
-    
     // Only leaves should be deleted from the bottom up.
-    if(cur->left != nullptr) {
+    if (cur->left != nullptr) {
       _clear(cur->left);
     }
-    if(cur->right != nullptr && cur->isThreaded == false) {
+    if (cur->right != nullptr && cur->isThreaded == false) {
       _clear(cur->right);
     }
 
@@ -86,24 +86,23 @@ class mymap {
     cur->isThreaded = otherCur->isThreaded;
 
     // Return that the newly constructed node
-    return cur;    
+    return cur;
   }
 
   void _copyRecurse(NODE*& cur, const NODE* otherCur) {
-
     // Start by copying the node we're at.
     cur = _copyNode(otherCur);
 
     // Then see what kind of walk we need to do.
-    if(otherCur->left != nullptr) {
-      // Valid walk left 
+    if (otherCur->left != nullptr) {
+      // Valid walk left
       _copyRecurse(cur->left, otherCur->left);
     }
-    if(otherCur->right != nullptr && !otherCur->isThreaded) {
+    if (otherCur->right != nullptr && !otherCur->isThreaded) {
       // Valid, non-threaded walk right.
       _copyRecurse(cur->right, otherCur->right);
     }
-    if(otherCur->right != nullptr && otherCur->isThreaded) {
+    if (otherCur->right != nullptr && otherCur->isThreaded) {
       // Threaded nodes run the risk of walking in a loop.
       // So just return at this point.
       return;
@@ -114,8 +113,11 @@ class mymap {
     // Establish a pointer to the root of the other tree.
     NODE* otherCur = other.root;
 
-    // Set up the root of the tree.
-    //this->root = _copyNode(otherCur);
+    // Case where the other tree is empty too.
+    if(otherCur == nullptr) {
+      this->root = nullptr;
+      return;
+    }
 
     // Begin the process of preorder copying the other tree.
     _copyRecurse(this->root, otherCur);
@@ -147,34 +149,29 @@ class mymap {
     // O(logN)
     //
     iterator operator++() {
-      
-      if(curr == nullptr) {
+      if (curr == nullptr) {
         return iterator(nullptr);
-        
-        // If the current node is threaded and has a valid right pointer, walk right
-      } else if(curr->isThreaded && curr->right != nullptr) {
+        // If the current node is threaded and has a valid right pointer, walk
+        // right
+      } else if (curr->isThreaded && curr->right != nullptr) {
         curr = curr->right;
         return iterator(curr);
-        
+
         // If the current node isn't threaded and has a right node...
       } else if (!curr->isThreaded && curr->right != nullptr) {
-        
         // Walk right by one.
         curr = curr->right;
-        
+
         // However, now we need to walk all the way left to use our threads.
-        while(curr->left != nullptr) {
+        while (curr->left != nullptr) {
           curr = curr->left;
         }
         return iterator(curr);
         // Lastly, if we're back at the true last node in the tree, bow out.
-      } else { //(curr->isThreaded && curr->right != nullptr) {
+      } else {  //(curr->isThreaded && curr->right != nullptr) {
         curr = nullptr;
         return iterator(curr);
       }
-
-
-      // return iterator(nullptr);  // TODO: Update this return.
     }
   };
 
@@ -217,9 +214,8 @@ class mymap {
   // self-balancing BST.
   //
   mymap& operator=(const mymap& other) {
-    
     // Are we assigning to ourselves?
-    if(this == &other) {
+    if (this == &other) {
       return *this;
     }
 
@@ -232,8 +228,8 @@ class mymap {
     // Copy the size
     this->size = other.size;
 
-    // Return the copied 
-    return *this;  
+    // Return the copied
+    return *this;
   }
 
   // clear:
@@ -244,7 +240,7 @@ class mymap {
   //
   void clear() {
     // Call the _clear helper function if the tree isn't empty
-    if(this->root != nullptr) {
+    if (this->root != nullptr) {
       _clear(this->root);
     }
     this->size = 0;
@@ -287,7 +283,7 @@ class mymap {
       // The root should be the only node
       this->root = toPut;
       this->root->isThreaded = true;
-      
+
       // size should = 1
       ++this->size;
 
@@ -298,39 +294,39 @@ class mymap {
     // Nodes to keep track of where we are.
     NODE* cur = this->root;
     NODE* prev = nullptr;
-    
+
     // If the tree isn't empty, walk to the node's insertion location
     while (cur != nullptr) {
       // Tree is in order of keys, not values
-      if(key < cur->key) {
-          // If the key is smaller than the key at the current node, walk left
-          prev = cur; 
-          cur = cur->left;
-      } else if(key > cur->key) {
-          // If the key is larger than the key at the current node, walk right
-          prev = cur;
-          cur = (cur->isThreaded) ? nullptr : cur->right;
+      if (key < cur->key) {
+        // If the key is smaller than the key at the current node, walk left
+        prev = cur;
+        cur = cur->left;
+      } else if (key > cur->key) {
+        // If the key is larger than the key at the current node, walk right
+        prev = cur;
+        cur = (cur->isThreaded) ? nullptr : cur->right;
       } else {
-          // If the key is equal to the key at the current node, stop
-          // No duplicates allowed.
-          cur->value = value;
-          delete toPut;
-          return;
+        // If the key is equal to the key at the current node, stop
+        // No duplicates allowed.
+        cur->value = value;
+        delete toPut;
+        return;
       }
     }
     // If we made it to a new leaf location, increment size.
     ++this->size;
 
     // Insert the node to the correct side of the former leaf.
-    if(key < prev->key) {
-        toPut->right = prev;
-        prev->left = toPut;
-        toPut->isThreaded = true;
+    if (key < prev->key) {
+      toPut->right = prev;
+      prev->left = toPut;
+      toPut->isThreaded = true;
     } else {
-        toPut->right = prev->right;
-        prev->right = toPut;
-        toPut->isThreaded = true;
-        prev->isThreaded = false;
+      toPut->right = prev->right;
+      prev->right = toPut;
+      toPut->isThreaded = true;
+      prev->isThreaded = false;
     }
   }
 
@@ -345,20 +341,20 @@ class mymap {
     NODE* cur = this->root;
 
     // If the tree is empty
-    if(cur == nullptr) {
-        return false;
+    if (cur == nullptr) {
+      return false;
     }
 
     // Walk until we fall out of the tree
-    while(cur != nullptr) {
-        if(key < cur->key) {
-            cur = cur->left;
-        } else if (key > cur->key) {
-            cur = (cur->isThreaded) ? nullptr : cur->right;
-        } else {
-            // If the key is equal, return true
-            return true;
-        }
+    while (cur != nullptr) {
+      if (key < cur->key) {
+        cur = cur->left;
+      } else if (key > cur->key) {
+        cur = (cur->isThreaded) ? nullptr : cur->right;
+      } else {
+        // If the key is equal, return true
+        return true;
+      }
     }
 
     // If we made it here, we fell out of the tree.
@@ -378,20 +374,20 @@ class mymap {
     NODE* cur = this->root;
 
     // If the tree is empty
-    if(cur == nullptr) {
-        return valueType();
+    if (cur == nullptr) {
+      return valueType();
     }
 
     // Walk until we fall out of the tree
-    while(cur != nullptr) {
-        if(key < cur->key) {
-            cur = cur->left;
-        } else if (key > cur->key) {
-            cur = (cur->isThreaded) ? nullptr : cur->right;
-        } else {
-            // If the key is equal, return the value at that node
-            return cur->value;
-        }
+    while (cur != nullptr) {
+      if (key < cur->key) {
+        cur = cur->left;
+      } else if (key > cur->key) {
+        cur = (cur->isThreaded) ? nullptr : cur->right;
+      } else {
+        // If the key is equal, return the value at that node
+        return cur->value;
+      }
     }
     // If we made it here, we fell out of the tree.
     return valueType();
@@ -409,12 +405,11 @@ class mymap {
   // Space complexity: O(1)
   //
   valueType operator[](keyType key) {
-    
     // Check if the key is in the map
-    if(!contains(key)) {
+    if (!contains(key)) {
       // If it isn't insert the key with the default value for the given type
       put(key, valueType());
-      return valueType();  
+      return valueType();
     } else {
       // If the key is in the map, return its value.
       return get(key);
@@ -440,13 +435,12 @@ class mymap {
   // threaded, self-balancing BST
   //
   iterator begin() {
-
     // Start from the root
     NODE* cur = this->root;
 
-    // Smallest thing in the tree, in terms of key order, is all the way to the left
-    // Walk down to the leftmost node
-    while(cur->left != nullptr) {
+    // Smallest thing in the tree, in terms of key order, is all the way to the
+    // left Walk down to the leftmost node
+    while (cur->left != nullptr) {
       cur = cur->left;
     }
 
@@ -474,7 +468,6 @@ class mymap {
   // threaded, self-balancing BST
   //
   string toString() {
-    
     // Start with an empty string.
     string mymapAsString = "";
 
