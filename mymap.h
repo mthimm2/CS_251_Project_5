@@ -74,6 +74,53 @@ class mymap {
     delete cur;
   }
 
+  NODE* _copyNode(const NODE* otherCur) {
+    // Generic node copy of all attributes
+    NODE* cur = new NODE();
+    cur->key = otherCur->key;
+    cur->value = otherCur->value;
+    cur->nL = otherCur->nL;
+    cur->nR = otherCur->nR;
+    cur->left = nullptr;
+    cur->right = nullptr;
+    cur->isThreaded = otherCur->isThreaded;
+
+    // Return that the newly constructed node
+    return cur;    
+  }
+
+  void _copyRecurse(NODE*& cur, const NODE* otherCur) {
+
+    // Start by copying the node we're at.
+    cur = _copyNode(otherCur);
+
+    // Then see what kind of walk we need to do.
+    if(otherCur->left != nullptr) {
+      // Valid walk left 
+      _copyRecurse(cur->left, otherCur->left);
+    }
+    if(otherCur->right != nullptr && !otherCur->isThreaded) {
+      // Valid, non-threaded walk right.
+      _copyRecurse(cur->right, otherCur->right);
+    }
+    if(otherCur->right != nullptr && otherCur->isThreaded) {
+      // Threaded nodes run the risk of walking in a loop.
+      // So just return at this point.
+      return;
+    }
+  }
+
+  void _copyData(const mymap& other) {
+    // Establish a pointer to the root of the other tree.
+    NODE* otherCur = other.root;
+
+    // Set up the root of the tree.
+    //this->root = _copyNode(otherCur);
+
+    // Begin the process of preorder copying the other tree.
+    _copyRecurse(this->root, otherCur);
+  }
+
   //
   // iterator:
   // This iterator is used so that mymap will work with a foreach loop.
@@ -156,7 +203,9 @@ class mymap {
   // self-balancing BST.
   //
   mymap(const mymap& other) {
-    // TODO: write this function.
+    // Just copy the other mymap.
+    _copyData(other);
+    this->size = other.size;
   }
 
   //
@@ -168,9 +217,23 @@ class mymap {
   // self-balancing BST.
   //
   mymap& operator=(const mymap& other) {
-    // TODO: write this function.
+    
+    // Are we assigning to ourselves?
+    if(this == &other) {
+      return *this;
+    }
 
-    return *this;  // TODO: Update this return.
+    // Clear the memory of the current tree
+    clear();
+
+    // Copy over the data, preorder
+    _copyData(other);
+
+    // Copy the size
+    this->size = other.size;
+
+    // Return the copied 
+    return *this;  
   }
 
   // clear:
@@ -180,8 +243,12 @@ class mymap {
   // self-balancing BST.
   //
   void clear() {
-    // Call the _clear helper function
-    _clear(this->root);
+    // Call the _clear helper function if the tree isn't empty
+    if(this->root != nullptr) {
+      _clear(this->root);
+    }
+    this->size = 0;
+    this->root = nullptr;
   }
 
   //
@@ -193,10 +260,7 @@ class mymap {
   //
   ~mymap() {
     // If the map isn't empty, we can clear the memory it occupies
-    if(this->root != nullptr) {
-      clear();
-      this->size = 0;
-    }
+    clear();
   }
 
   //

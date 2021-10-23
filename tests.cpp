@@ -1140,6 +1140,7 @@ TEST(mymap, bracketOperator) {
 
 TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
 
+    // Trivial case test
     mymap<int, int> testing;
     testing.put(2, 2);
     testing.put(1, 1);
@@ -1154,21 +1155,25 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
         ASSERT_EQ(order[i++], key);
     }
 
+    // Larger maps of trivial data types
     mymap<int, int> bigOne;
     map<int, int> correctBigOne;
 
+    // Insert elements
     for(int x = 0; x < 10000; ++x) {
         int n = randomInteger(0, 10000);
         bigOne.put(n, n);
         correctBigOne[n] = n;
     }
 
+    // Traverse and verify.
     map<int, int>::iterator iter = correctBigOne.begin();
     for(auto key : bigOne) {
         ASSERT_EQ(iter->second, bigOne.get(key));
         ++iter;
     }
 
+    // A map with string as the key
     mymap<string, int> strToInt;
     map<string, int> correctStrToInt;
     strToInt.put("Bob", 1);
@@ -1181,24 +1186,37 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
     correctStrToInt["Sam"] = 1;
     correctStrToInt["David"] = 1;
     correctStrToInt["Alex"] = 1;
+
+    // Traverse and verify
     map<string, int>::iterator iter2 = correctStrToInt.begin();
     for(auto key : strToInt) {
         ASSERT_EQ(iter2->second, strToInt.get(key));
         ++iter2;
     }
+
+    // Check the beginning of the mymap
     ASSERT_EQ("Alex", *strToInt.begin());
+    auto x = correctStrToInt.begin();
+    ASSERT_EQ("Alex", x->first);
 }
 
-TEST (mymap, destructorTest) {
-    mymap<int, int> test;
-    test.put(1,1);
-    mymap<double, int> test2;
-    test2.put(1.0,1);
-    mymap<char, int> test3;
-    test3.put('a', 2);
-    mymap<char, char> test4;
-    test4.put('a', 'a');
-    mymap<string, char> test5;
-    test5.put("hey", 'a');
-    test5.put("hey", 'b');
+TEST (mymap, copyAssignmentOperator) {
+
+    // Small initial test of a trivial case.
+    mymap<int, int> original;
+    original.put(2,2);
+    original.put(1,1);
+    original.put(3,3);
+
+    // Use the copy assignment operator to bring in a new mymap
+    mymap<int, int> clone = original;
+
+    // Make sure all of the keys match
+    int i = 0;
+    for(int x = 0; x < clone.Size(); ++x) {
+        ASSERT_EQ(original[i], clone[i]);
+        ++i;
+    }
+
+
 }
