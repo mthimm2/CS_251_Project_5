@@ -1138,17 +1138,7 @@ TEST(mymap, bracketOperator) {
     ASSERT_EQ(anotherOne[5000], 'q');
 }
 
-TEST(mymap, iteratorBegin) {
-
-    mymap<int, int> testing;
-    testing.put(2, 2);
-    testing.put(1, 1);
-    testing.put(3, 3);
-    testing.put(0, 0);
-
-}
-
-TEST(mymap, operatorPlusPlus) {
+TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
 
     mymap<int, int> testing;
     testing.put(2, 2);
@@ -1173,11 +1163,28 @@ TEST(mymap, operatorPlusPlus) {
         correctBigOne[n] = n;
     }
 
-    i = 0;
     map<int, int>::iterator iter = correctBigOne.begin();
     for(auto key : bigOne) {
         ASSERT_EQ(iter->second, bigOne.get(key));
         ++iter;
     }
 
+    mymap<string, int> strToInt;
+    map<string, int> correctStrToInt;
+    strToInt.put("Bob", 1);
+    strToInt.put("Max", 1);
+    strToInt.put("Sam", 1);
+    strToInt.put("David", 1);
+    strToInt.put("Alex", 1);
+    correctStrToInt["Bob"] = 1;
+    correctStrToInt["Max"] = 1;
+    correctStrToInt["Sam"] = 1;
+    correctStrToInt["David"] = 1;
+    correctStrToInt["Alex"] = 1;
+    map<string, int>::iterator iter2 = correctStrToInt.begin();
+    for(auto key : strToInt) {
+        ASSERT_EQ(iter2->second, strToInt.get(key));
+        ++iter2;
+    }
+    ASSERT_EQ("Alex", *strToInt.begin());
 }
