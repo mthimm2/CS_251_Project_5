@@ -60,6 +60,20 @@ class mymap {
     }
   }
 
+  void _clear(NODE* cur) {
+    
+    // Only leaves should be deleted from the bottom up.
+    if(cur->left != nullptr) {
+      _clear(cur->left);
+    }
+    if(cur->right != nullptr && cur->isThreaded == false) {
+      _clear(cur->right);
+    }
+
+    // After we walk to a leaf, delete it
+    delete cur;
+  }
+
   //
   // iterator:
   // This iterator is used so that mymap will work with a foreach loop.
@@ -166,7 +180,8 @@ class mymap {
   // self-balancing BST.
   //
   void clear() {
-    // TODO: write this function.
+    // Call the _clear helper function
+    _clear(this->root);
   }
 
   //
@@ -177,11 +192,11 @@ class mymap {
   // self-balancing BST.
   //
   ~mymap() {
-    // TODO: write this function.
-  }
-
-  void putWalk(NODE*& cur, NODE*& prev, keyType& key, valueType& value) {
-
+    // If the map isn't empty, we can clear the memory it occupies
+    if(this->root != nullptr) {
+      clear();
+      this->size = 0;
+    }
   }
 
   //
@@ -235,6 +250,7 @@ class mymap {
           // If the key is equal to the key at the current node, stop
           // No duplicates allowed.
           cur->value = value;
+          delete toPut;
           return;
       }
     }
