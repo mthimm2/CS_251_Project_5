@@ -62,20 +62,11 @@ class mymap {
   }
 
   void _clear(NODE* cur) {
-<<<<<<< HEAD
-    
-    // Only leaves should be deleted from the bottom up.
-    if(cur->left != nullptr) {
-      _clear(cur->left);
-    }
-    if(cur->right != nullptr && cur->isThreaded == false) {
-=======
     // Only leaves should be deleted from the bottom up.
     if (cur->left != nullptr) {
       _clear(cur->left);
     }
     if (cur->right != nullptr && cur->isThreaded == false) {
->>>>>>> milestoneFour
       _clear(cur->right);
     }
 
@@ -83,8 +74,6 @@ class mymap {
     delete cur;
   }
 
-<<<<<<< HEAD
-=======
   NODE* _copyNode(const NODE* otherCur) {
     // Generic node copy of all attributes
     NODE* cur = new NODE();
@@ -134,7 +123,6 @@ class mymap {
     _copyRecurse(this->root, otherCur);
   }
 
->>>>>>> milestoneFour
   //
   // iterator:
   // This iterator is used so that mymap will work with a foreach loop.
@@ -251,17 +239,12 @@ class mymap {
   // self-balancing BST.
   //
   void clear() {
-<<<<<<< HEAD
-    // Call the _clear helper function
-    _clear(this->root);
-=======
     // Call the _clear helper function if the tree isn't empty
     if (this->root != nullptr) {
       _clear(this->root);
     }
     this->size = 0;
     this->root = nullptr;
->>>>>>> milestoneFour
   }
 
   //
@@ -273,14 +256,7 @@ class mymap {
   //
   ~mymap() {
     // If the map isn't empty, we can clear the memory it occupies
-<<<<<<< HEAD
-    if(this->root != nullptr) {
-      clear();
-      this->size = 0;
-    }
-=======
     clear();
->>>>>>> milestoneFour
   }
 
   //
@@ -331,19 +307,11 @@ class mymap {
         prev = cur;
         cur = (cur->isThreaded) ? nullptr : cur->right;
       } else {
-<<<<<<< HEAD
-          // If the key is equal to the key at the current node, stop
-          // No duplicates allowed.
-          cur->value = value;
-          delete toPut;
-          return;
-=======
         // If the key is equal to the key at the current node, stop
         // No duplicates allowed.
         cur->value = value;
         delete toPut;
         return;
->>>>>>> milestoneFour
       }
     }
     // If we made it to a new leaf location, increment size.
