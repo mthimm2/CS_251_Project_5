@@ -1097,7 +1097,7 @@ TEST(mymap, toString) {
     mymap<int, int> bigOne;
     stringstream dump("");
 
-    int n = randomInteger(0, 10000);
+    int n = randomInteger(0, 100);
     for(int x = 0; x < n; ++x) {
         bigOne.put(x, x);
         dump << "key: " << x << " value: " << x << "\n";
@@ -1187,4 +1187,18 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
         ++iter2;
     }
     ASSERT_EQ("Alex", *strToInt.begin());
+}
+
+TEST (mymap, destructorTest) {
+    mymap<int, int> test;
+    test.put(1,1);
+    mymap<double, int> test2;
+    test2.put(1.0,1);
+    mymap<char, int> test3;
+    test3.put('a', 2);
+    mymap<char, char> test4;
+    test4.put('a', 'a');
+    mymap<string, char> test5;
+    test5.put("hey", 'a');
+    test5.put("hey", 'b');
 }
