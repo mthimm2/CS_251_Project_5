@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -23,6 +24,62 @@ class mymap {
   };
   NODE* root;  // pointer to root node of the BST
   int size;    // # of key/value pairs in the mymap
+
+
+
+  bool _isBalancedTree(NODE* cur) {
+    // Evaluation of the conditions for imbalance
+    if(cur->nL > (2 * cur->nR) + 1) {
+      return false;
+    } else if (cur->nR > (2 * cur->nL) + 1) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  void _gatherNodesInSubtree(vector<NODE*>& nodes, NODE*& cur) {
+
+    // Gotta stop walking once we hit a nullptr
+    if (cur == nullptr) {
+      return;
+    }
+
+    // Walk as far left as we can on for the current subtree
+    if (cur->left != nullptr) {
+      _gatherNodesInSubtree(nodes, cur->left);
+    }
+
+    // In order insertion into the vector.
+    nodes.push_back(cur);
+
+    // Then, walk as far right as we can.
+    // However, we now need to beware of threads walking us in a circle.
+    // Therefore, we should check if the node is threaded and stop recursing if
+    // that's the case.
+    if (cur->right != nullptr && cur->isThreaded == false) {
+      _gatherNodesInSubtree(nodes, cur->right);
+    }
+  }
+
+  /*
+    _rebalanceTree:
+
+    Performs the actual rebalancing of the leaning BST.
+    The boolean flag indicates whether we're doing a left subtree rebalance, or right
+  */
+  void _rebalanceTree(NODE*& breakLocation, NODE*& parent) { 
+    
+    // Create a vector of node pointers to hold the elements in the subtree at and below the break location.
+    vector<NODE*> nodesInSubtree;
+
+    // Now we need to gather all of the nodes in the broken subtree
+    _gatherNodesInSubtree(nodesInSubtree, breakLocation);
+
+    for(NODE*& node : nodesInSubtree) {
+      cout << node->key << ", " << node->value << endl;
+    }
+  }
 
   /*
     toStringRecurse:
@@ -295,15 +352,26 @@ class mymap {
     NODE* cur = this->root;
     NODE* prev = nullptr;
 
+    // New addition for milestone 5, a vector of NODE* for checking balance
     // If the tree isn't empty, walk to the node's insertion location
     while (cur != nullptr) {
+
+      // Check the tree's balance at its current point
+      if(!_isBalancedTree(cur)) {
+        cout << "tree unbalanced at" << cur->key << endl;
+        _rebalanceTree(cur, prev);
+      }
+
       // Tree is in order of keys, not values
       if (key < cur->key) {
         // If the key is smaller than the key at the current node, walk left
+        ++cur->nL;
         prev = cur;
         cur = cur->left;
+
       } else if (key > cur->key) {
         // If the key is larger than the key at the current node, walk right
+        ++cur->nR;
         prev = cur;
         cur = (cur->isThreaded) ? nullptr : cur->right;
       } else {
@@ -504,8 +572,9 @@ class mymap {
   // Time complexity: O(n), where n is total number of nodes in the
   // threaded, self-balancing BST
   //
-  string checkBalance() {
-    // TODO: write this function.
+  string checkBalance(NODE*& cur, NODE*& prev) {
+    
+
 
     return {};  // TODO: Update this return.
   }
