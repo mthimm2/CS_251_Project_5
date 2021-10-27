@@ -1386,12 +1386,24 @@ using namespace std;
 //     }
 // }
 
-TEST(mymap, gabagool) {
+TEST(mymap, toVector) {
     mymap<int, int> a;
     a.put(2, 2);
     a.put(1, 1);
     a.put(3, 3);
-    a.put(4, 4);
-    a.put(5, 5);
-    a.put(6, 6);
+    cout << a.checkBalance() << endl;
+    //vector<pair<int, int> > pairs = a.toVector();
+    // for(pair<int, int>& p : pairs) {
+    //     cout << "key: " << p.first << " value: " << p.second << endl;
+    // }
+
+    // mymap<int, double> large;
+    // for(int x = 0; x < 25; ++x) {
+    //     int n = randomInteger(0, 25);
+    //     large.put(n, (double) n);
+    // }
+    // vector<pair<int, double> > pairsTwo = large.toVector();
+    // for(pair<int, double>& p : pairsTwo) {
+    //     cout << "key: " << p.first << " value: " << p.second << endl;
+    // }
 }

@@ -26,7 +26,6 @@ class mymap {
   int size;    // # of key/value pairs in the mymap
 
 
-
   bool _isBalancedTree(NODE* cur) {
     // Evaluation of the conditions for imbalance
     if(cur->nL > (2 * cur->nR) + 1) {
@@ -62,6 +61,17 @@ class mymap {
     }
   }
 
+  NODE* _createBalancedSubtree(vector<NODE*> nodes, NODE*& newRoot) {
+
+    // The new root should be the middle of the vector
+    newRoot = nodes[nodes.size() / 2];
+    int lowIdx = (nodes.size() / 2) - 1;
+    int highIdx = (nodes.size() / 2) + 1;
+    newRoot->left = _vectorRecurseInsert(nodes, newRoot->left, 0, nodes.size() / 2, true);
+
+    return newRoot;
+  }
+
   /*
     _rebalanceTree:
 
@@ -79,6 +89,24 @@ class mymap {
     for(NODE*& node : nodesInSubtree) {
       cout << node->key << ", " << node->value << endl;
     }
+
+    // Keep track of what side of the parent the break happened on.
+    NODE* balancedSubTreeRoot = nullptr;
+    if(parent != nullptr) {
+      if(parent->left == breakLocation) {
+        parent->left = balancedSubTreeRoot;
+      } else {
+        parent->right = balancedSubTreeRoot;
+      }
+    } else {
+      this->root = balancedSubTreeRoot;
+    }
+
+    // We're gonna wipe out the old, unbalanced subtree.
+    _clear(breakLocation);
+
+    // Now set up the new subtree
+    balancedSubTreeRoot = _createBalancedSubtree(nodesInSubtree, balancedSubTreeRoot);
   }
 
   /*
@@ -178,6 +206,28 @@ class mymap {
 
     // Begin the process of preorder copying the other tree.
     _copyRecurse(this->root, otherCur);
+  }
+
+  void _preOrder(NODE* cur, stringstream& bal) {
+
+    if(cur == nullptr) {
+      return;
+    }
+    bal << "key: " << cur->key << ", nL: " << cur->nL << ", nR: " << cur->nR << "\n";
+    
+    // Standard pre-order traversal being cautious of threads.
+    if(cur->left != nullptr) {
+      _preOrder(cur->left, bal);
+    }
+    
+    if(cur->right != nullptr && !cur->isThreaded) {
+      _preOrder(cur->right, bal);
+    }
+
+    if(cur->right != nullptr && cur->isThreaded) {
+      return;
+    }
+    
   }
 
   //
@@ -352,26 +402,22 @@ class mymap {
     NODE* cur = this->root;
     NODE* prev = nullptr;
 
+    // Keep track of the nodes we visited while inserting something.
+    stack<NODE*> nodesToUpdateNLNR;
+
     // New addition for milestone 5, a vector of NODE* for checking balance
     // If the tree isn't empty, walk to the node's insertion location
     while (cur != nullptr) {
-
-      // Check the tree's balance at its current point
-      if(!_isBalancedTree(cur)) {
-        cout << "tree unbalanced at" << cur->key << endl;
-        _rebalanceTree(cur, prev);
-      }
-
       // Tree is in order of keys, not values
       if (key < cur->key) {
         // If the key is smaller than the key at the current node, walk left
-        ++cur->nL;
+        nodesToUpdateNLNR.push(cur);
         prev = cur;
         cur = cur->left;
 
       } else if (key > cur->key) {
         // If the key is larger than the key at the current node, walk right
-        ++cur->nR;
+        nodesToUpdateNLNR.push(cur);
         prev = cur;
         cur = (cur->isThreaded) ? nullptr : cur->right;
       } else {
@@ -396,6 +442,25 @@ class mymap {
       toPut->isThreaded = true;
       prev->isThreaded = false;
     }
+
+    // After the heights are updated, we'll need to walk back down the tree again.
+    stack<NODE*> insertionPathDown;
+
+    // Update nL and nR along the insertion path
+    while(!nodesToUpdateNLNR.size() == 0) {
+      if(key < nodesToUpdateNLNR.top()->key) {
+        ++nodesToUpdateNLNR.top()->nL;
+      } else {
+        ++nodesToUpdateNLNR.top()->nR;
+      }
+      //insertionPathDown.push(nodesToUpdateNLNR.top());
+      // Move on to updating the next node
+      nodesToUpdateNLNR.pop();
+    }
+
+    // TODO: Write methodology for getting the right subtree once we find the point of imbalance.
+    while()
+
   }
 
   //
@@ -557,9 +622,16 @@ class mymap {
   // threaded, self-balancing BST
   //
   vector<pair<keyType, valueType> > toVector() {
-    // TODO: write this function.
+    
+    vector<NODE*> nodes;
+    _gatherNodesInSubtree(nodes, this->root);
+    vector<pair<keyType, valueType> > pairs;
 
-    return {};  // TODO: Update this return.
+    for(NODE*& a : nodes) {
+      pairs.push_back(pair<keyType, valueType>(a->key, a->value));
+    }
+
+    return pairs;  // TODO: Update this return.
   }
 
   //
@@ -572,10 +644,13 @@ class mymap {
   // Time complexity: O(n), where n is total number of nodes in the
   // threaded, self-balancing BST
   //
-  string checkBalance(NODE*& cur, NODE*& prev) {
+  string checkBalance() {
     
+    static string bal = "";
+    stringstream balStream(bal);
+    _preOrder(this->root, balStream);
+    bal = balStream.str();
 
-
-    return {};  // TODO: Update this return.
+    return bal;  // TODO: Update this return.
   }
 };
