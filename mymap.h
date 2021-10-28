@@ -26,6 +26,12 @@ class mymap {
   int size;    // # of key/value pairs in the mymap
 
 
+  /*
+    isBalancedTree:
+
+    Checks the passed node's seesaw balance property to check for balance violations
+    Takes in the current node as we're walking down along the insertion path as the prarameter
+  */
   bool _isBalancedTree(NODE* cur) {
     // Evaluation of the conditions for imbalance
     if(cur->nL > (2 * cur->nR) + 1) {
@@ -37,6 +43,12 @@ class mymap {
     }
   }
 
+  /*
+    gatherNodesInSubTree:
+
+    Recursively gathers all of the nodes in the subtree of the node that violates the seesaw balance property.
+    Takes the vector to be filled and the violator node as arguments
+  */
   void _gatherNodesInSubtree(vector<NODE*>& nodes, NODE*& cur) {
 
     // Gotta stop walking once we hit a nullptr
@@ -61,15 +73,18 @@ class mymap {
     }
   }
 
-  NODE* _createBalancedSubtree(vector<NODE*> nodes, NODE*& newRoot) {
+  NODE* _createBalancedSubtree(NODE*& cur, int low, int high, vector<NODE*>& nodes) {
 
-    // The new root should be the middle of the vector
-    newRoot = nodes[nodes.size() / 2];
-    int lowIdx = (nodes.size() / 2) - 1;
-    int highIdx = (nodes.size() / 2) + 1;
-    newRoot->left = _vectorRecurseInsert(nodes, newRoot->left, 0, nodes.size() / 2, true);
+    // The midpoint of any interval is low + high / 2
+    int mid = (low + high) / 2;
 
-    return newRoot;
+    // The next node we insert should be at that point.
+    // Over any sub-interval, half of the nodes should be > the middle and half should be < the middle
+    cur = nodes[mid];
+
+    // We want to continue to do this, recursively.
+    _createBalancedSubtree(cur->left, low, mid, nodes);
+    _createBalancedSubtree(cur->right, mid, high, nodes);
   }
 
   /*
@@ -102,11 +117,17 @@ class mymap {
       this->root = balancedSubTreeRoot;
     }
 
-    // We're gonna wipe out the old, unbalanced subtree.
-    _clear(breakLocation);
+    // Important indices for the vector and insertion
+    int mid = nodesInSubtree.size() / 2;
+    int right = nodesInSubtree.size() - 1;
+    int left = 0;
 
-    // Now set up the new subtree
-    balancedSubTreeRoot = _createBalancedSubtree(nodesInSubtree, balancedSubTreeRoot);
+    // Now set up the new subtree with a root in the middle of the in-order vector
+    balancedSubTreeRoot = nodesInSubtree[mid];
+
+    // Then, recursively insert and rebalance the tree
+    _createBalancedSubtree(balancedSubTreeRoot->left, left, mid, nodesInSubtree);
+    _createBalancedSubtree(balancedSubTreeRoot->right, mid, right, nodesInSubtree);
   }
 
   /*
@@ -443,9 +464,6 @@ class mymap {
       prev->isThreaded = false;
     }
 
-    // After the heights are updated, we'll need to walk back down the tree again.
-    stack<NODE*> insertionPathDown;
-
     // Update nL and nR along the insertion path
     while(!nodesToUpdateNLNR.size() == 0) {
       if(key < nodesToUpdateNLNR.top()->key) {
@@ -458,9 +476,28 @@ class mymap {
       nodesToUpdateNLNR.pop();
     }
 
-    // TODO: Write methodology for getting the right subtree once we find the point of imbalance.
-    while()
+    cur = this->root;
+    prev = nullptr;
 
+    // while(cur != nullptr) {
+    //   // Tree is in order of keys, not values
+    //   if (key < cur->key) {
+    //     // If the key is smaller than the key at the current node, walk left
+    //     nodesToUpdateNLNR.push(cur);
+    //     prev = cur;
+    //     cur = cur->left;
+
+    //   } else if (key > cur->key) {
+    //     // If the key is larger than the key at the current node, walk right
+    //     nodesToUpdateNLNR.push(cur);
+    //     prev = cur;
+    //     cur = (cur->isThreaded) ? nullptr : cur->right;
+    //   }
+    //   if(!_isBalancedTree(cur)) {
+    //     _rebalanceTree(cur, prev);
+    //     break;
+    //   }
+    // }
   }
 
   //
