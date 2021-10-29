@@ -1124,18 +1124,18 @@ TEST(mymap, bracketOperator) {
     ASSERT_EQ(testing[1], 437);
 
     mymap<double, int> testingTwo;
-    for(int x = 0; x < 5000; ++x) {
+    for(int x = 0; x < 500; ++x) {
         int n = randomInteger(0,10000);
         testingTwo.put((double) n, n);
         ASSERT_EQ(testingTwo[(double) n], n);
     }
 
     mymap<int, char> anotherOne;
-    for(int x = 0; x < 10000; ++x) {
+    for(int x = 0; x < 1000; ++x) {
         ASSERT_EQ(anotherOne[x], '\0');
     }
-    anotherOne.put(5000, 'q');
-    ASSERT_EQ(anotherOne[5000], 'q');
+    anotherOne.put(500, 'q');
+    ASSERT_EQ(anotherOne[500], 'q');
 
     map<int, int> standardMap;
     mymap<int, int> parallelMap;
@@ -1178,8 +1178,8 @@ TEST(mymap, iteratorBeginAndOperatorPlusPlus) {
     map<int, int> correctBigOne;
 
     // Insert elements
-    for(int x = 0; x < 10000; ++x) {
-        int n = randomInteger(0, 10000);
+    for(int x = 0; x < 1000; ++x) {
+        int n = randomInteger(0, 1000);
         bigOne.put(n, n);
         correctBigOne[n] = n;
     }
@@ -1283,8 +1283,8 @@ TEST (mymap, copyAssignmentOperator) {
 
     // Time to make one that's MASSIF
     mymap<double, double> bigKahuna;
-    for(int x = 0; x < 1000000; ++x) {
-        int n = randomInteger(0,1000000);
+    for(int x = 0; x < 10000; ++x) {
+        int n = randomInteger(0,10000);
         bigKahuna.put((double) n, (double) n);
     }
 
@@ -1368,8 +1368,8 @@ TEST(mymap, copyConstructor) {
 
     // Time to make one that's MASSIF
     mymap<double, double> bigKahuna;
-    for(int x = 0; x < 1000000; ++x) {
-        int n = randomInteger(0,1000000);
+    for(int x = 0; x < 10000; ++x) {
+        int n = randomInteger(0,10000);
         bigKahuna.put((double) n, (double) n);
     }
 
@@ -1402,19 +1402,19 @@ TEST(mymap, toVector) {
         int n = randomInteger(0, 25);
         large.put(n, (double) n);
     }
-    vector<pair<int, double> > pairsTwo = large.toVector();
-    for(pair<int, double>& p : pairsTwo) {
-        cout << "key: " << p.first << " value: " << p.second << endl;
-    }
+    // vector<pair<int, double> > pairsTwo = large.toVector();
+    // for(pair<int, double>& p : pairsTwo) {
+    //     cout << "key: " << p.first << " value: " << p.second << endl;
+    // }
 }
 
-// TEST(mymap, balancing) {
-//     mymap<int, int> a;
-//     a.put(2, 2);
-//     a.put(1, 1);
-//     a.put(3, 3);
-//     a.put(4, 4);
-//     a.put(5, 5);
-//     cout << a.checkBalance() << endl;
+TEST(mymap, balancing) {
+    mymap<int, int> a;
+    a.put(2, 2);
+    a.put(1, 1);
+    a.put(3, 3);
+    a.put(4, 4);
+    a.put(5, 5);
+    cout << a.checkBalance() << endl;
 
-// }
+}

@@ -25,16 +25,16 @@ class mymap {
   NODE* root;  // pointer to root node of the BST
   int size;    // # of key/value pairs in the mymap
 
-
   /*
     isBalancedTree:
 
-    Checks the passed node's seesaw balance property to check for balance violations
-    Takes in the current node as we're walking down along the insertion path as the prarameter
+    Checks the passed node's seesaw balance property to check for balance
+    violations Takes in the current node as we're walking down along the
+    insertion path as the prarameter
   */
   bool _isBalancedTree(NODE* cur) {
     // Evaluation of the conditions for imbalance
-    if(cur->nL > (2 * cur->nR) + 1) {
+    if (cur->nL > (2 * cur->nR) + 1) {
       return false;
     } else if (cur->nR > (2 * cur->nL) + 1) {
       return false;
@@ -46,11 +46,11 @@ class mymap {
   /*
     gatherNodesInSubTree:
 
-    Recursively gathers all of the nodes in the subtree of the node that violates the seesaw balance property.
-    Takes the vector to be filled and the violator node as arguments
+    Recursively gathers all of the nodes in the subtree of the node that
+    violates the seesaw balance property. Takes the vector to be filled and the
+    violator node as arguments
   */
   void _gatherNodesInSubtree(vector<NODE*>& nodes, NODE*& cur) {
-
     // Gotta stop walking once we hit a nullptr
     if (cur == nullptr) {
       return;
@@ -76,22 +76,24 @@ class mymap {
   /*
     _createBalancedSubTree:
 
-    This function handles the recursion for inserting the nodes from the subtree vector.
-    Takes in the Node where the break occurred, a low and high index, and the vector of nodes.
+    This function handles the recursion for inserting the nodes from the subtree
+    vector. Takes in the Node where the break occurred, a low and high index,
+    and the vector of nodes.
   */
-  void _createBalancedSubtree(NODE*& cur, int& low, int& high, vector<NODE*>& nodes) {
-
+  void _createBalancedSubtree(NODE*& cur, int& low, int& high,
+                              vector<NODE*>& nodes) {
     // The midpoint of any interval is low + high / 2
     int mid;
-    if(high != low) {
+    if (high != low) {
       mid = (low + high) / 2;
     } else {
       return;
     }
-    
-    cout << high << endl;
+
+    // cout << high << endl;
     // The next node we insert should be at that point.
-    // Over any sub-interval, half of the nodes should be > the middle and half should be < the middle
+    // Over any sub-interval, half of the nodes should be > the middle and half
+    // should be < the middle
     cur = nodes[mid];
 
     // We want to continue to do this, recursively.
@@ -103,24 +105,25 @@ class mymap {
     _rebalanceTree:
 
     Performs the actual rebalancing of the leaning BST.
-    Takes in the node pointers of the break point and the parent of the broken node
+    Takes in the node pointers of the break point and the parent of the broken
+    node
   */
-  void _rebalanceTree(NODE*& breakLocation, NODE*& parent) { 
-    
-    // Create a vector of node pointers to hold the elements in the subtree at and below the break location.
+  void _rebalanceTree(NODE*& breakLocation, NODE*& parent) {
+    // Create a vector of node pointers to hold the elements in the subtree at
+    // and below the break location.
     vector<NODE*> nodesInSubtree;
 
     // Now we need to gather all of the nodes in the broken subtree
     _gatherNodesInSubtree(nodesInSubtree, breakLocation);
 
-    for(NODE*& node : nodesInSubtree) {
+    for (NODE*& node : nodesInSubtree) {
       cout << node->key << ", " << node->value << endl;
     }
 
     // Keep track of what side of the parent the break happened on.
     NODE* balancedSubTreeRoot = nullptr;
-    if(parent != nullptr) {
-      if(parent->left == breakLocation) {
+    if (parent != nullptr) {
+      if (parent->left == breakLocation) {
         parent->left = balancedSubTreeRoot;
       } else {
         parent->right = balancedSubTreeRoot;
@@ -134,13 +137,16 @@ class mymap {
     int right = nodesInSubtree.size() - 1;
     int left = 0;
 
-    // Now set up the new subtree with a root in the middle of the in-order vector
+    // Now set up the new subtree with a root in the middle of the in-order
+    // vector
     balancedSubTreeRoot = nodesInSubtree[mid];
 
     // Then, recursively insert and rebalance the tree
-    _createBalancedSubtree(balancedSubTreeRoot->left, left, mid, nodesInSubtree);
+    _createBalancedSubtree(balancedSubTreeRoot->left, left, mid,
+                           nodesInSubtree);
     mid = nodesInSubtree.size() / 2;
-    _createBalancedSubtree(balancedSubTreeRoot->right, mid, right, nodesInSubtree);
+    _createBalancedSubtree(balancedSubTreeRoot->right, mid, right,
+                           nodesInSubtree);
   }
 
   /*
@@ -224,9 +230,10 @@ class mymap {
   /*
     _copyRecurse:
 
-    Private helper function called by the _copyData() function, in order to copy all of the nodes in a tree
-    Creates a new node for each node in the tree to be copied
-    Takes in a pointer to the origin of the tree that we're constructing and a reference to the tree that we're copying
+    Private helper function called by the _copyData() function, in order to copy
+    all of the nodes in a tree Creates a new node for each node in the tree to
+    be copied Takes in a pointer to the origin of the tree that we're
+    constructing and a reference to the tree that we're copying
   */
   void _copyRecurse(NODE*& cur, const NODE* otherCur) {
     // Start by copying the node we're at.
@@ -251,15 +258,15 @@ class mymap {
   /*
     _copyData:
 
-    Wrapper function that calls the recursive _copyRecurse function, in order to completely copy
-    the tree that is passed in as a reference.
+    Wrapper function that calls the recursive _copyRecurse function, in order to
+    completely copy the tree that is passed in as a reference.
   */
   void _copyData(const mymap& other) {
     // Establish a pointer to the root of the other tree.
     NODE* otherCur = other.root;
 
     // Case where the other tree is empty too.
-    if(otherCur == nullptr) {
+    if (otherCur == nullptr) {
       this->root = nullptr;
       return;
     }
@@ -271,49 +278,48 @@ class mymap {
   /*
     _preOrder:
 
-    Helper function called by checkBalance() in order to check the balance of all of the nodes in the tree
-    Recursively traverses the tree and adds to the string stream of balance figures.
-    Takes in a pointer to the root of the tree whose balance we're checking and a stringstream that we add to
+    Helper function called by checkBalance() in order to check the balance of
+    all of the nodes in the tree Recursively traverses the tree and adds to the
+    string stream of balance figures. Takes in a pointer to the root of the tree
+    whose balance we're checking and a stringstream that we add to
   */
   void _preOrder(NODE* cur, stringstream& bal) {
-
-    if(cur == nullptr) {
+    if (cur == nullptr) {
       return;
     }
-    bal << "key: " << cur->key << ", nL: " << cur->nL << ", nR: " << cur->nR << "\n";
-    
+    bal << "key: " << cur->key << ", nL: " << cur->nL << ", nR: " << cur->nR
+        << "\n";
+
     // Standard pre-order traversal being cautious of threads.
-    if(cur->left != nullptr) {
+    if (cur->left != nullptr) {
       _preOrder(cur->left, bal);
     }
-    
-    if(cur->right != nullptr && !cur->isThreaded) {
+
+    if (cur->right != nullptr && !cur->isThreaded) {
       _preOrder(cur->right, bal);
     }
 
-    if(cur->right != nullptr && cur->isThreaded) {
+    if (cur->right != nullptr && cur->isThreaded) {
       return;
     }
-    
   }
 
   /*
     _updatenLnR:
 
-    Walks back up the tree after a node is inserted and updates the heights of all nodes above the new leaf.
-    Takes the stack of nodes created during the walk down the tree, and the key and value we wanted to insert
-    as arguments.
+    Walks back up the tree after a node is inserted and updates the heights of
+    all nodes above the new leaf. Takes the stack of nodes created during the
+    walk down the tree, and the key and value we wanted to insert as arguments.
   */
   void _updatenLnR(stack<NODE*>& nodes, keyType key, valueType value) {
-
     // Update nL and nR along the insertion path
-    while(!nodes.size() == 0) {
-      if(key < nodes.top()->key) {
+    while (!nodes.size() == 0) {
+      if (key < nodes.top()->key) {
         ++nodes.top()->nL;
       } else {
         ++nodes.top()->nR;
       }
-      //insertionPathDown.push(nodesToUpdateNLNR.top());
+      // insertionPathDown.push(nodesToUpdateNLNR.top());
       // Move on to updating the next node
       nodes.pop();
     }
@@ -324,12 +330,11 @@ class mymap {
 
     Performs the walk down the tree to the insertion destination
     If the key isn't unique, we update the value and return false.
-    The return value is used to know whether or not we need to delete the new node we constructed
-    at the beginning of the put function
-    Takes in the previous and current nodes as an argument, as well as the key to be inserted
+    The return value is used to know whether or not we need to delete the new
+    node we constructed at the beginning of the put function Takes in the
+    previous and current nodes as an argument, as well as the key to be inserted
   */
   bool _insertWalk(NODE*& cur, NODE*& prev, keyType key, valueType value) {
-
     // Keep track of the nodes we visited while inserting something.
     stack<NODE*> nodesToUpdateNLNR;
 
@@ -362,16 +367,23 @@ class mymap {
   /*
     _balanceCheckWalk:
 
-    Performs the walk down the tree looking for a violation of the seesaw balance property
-    Once a violation is found, this function calls the _rebalanceTree() function to correct the issue
-    Takes in the key that we inserted as an argument.
+    Performs the walk down the tree looking for a violation of the seesaw
+    balance property Once a violation is found, this function calls the
+    _rebalanceTree() function to correct the issue Takes in the key that we
+    inserted as an argument.
   */
   void _balanceCheckWalk(keyType key) {
     // Walk down the tree again.
     NODE* cur = this->root;
     NODE* prev = nullptr;
 
-    while(cur != nullptr) {
+    while (cur != nullptr) {
+      // Check if the current node is breaking the seesaw balance property
+      if (!_isBalancedTree(cur)) {
+        _rebalanceTree(cur, prev);
+        break;
+      }
+
       // Tree is in order of keys, not values
       if (key < cur->key) {
         // If the key is smaller than the key at the current node, walk left
@@ -385,10 +397,6 @@ class mymap {
       } else {
         break;
       }
-      if(!_isBalancedTree(cur)) {
-        _rebalanceTree(cur, prev);
-        break;
-      }
     }
   }
 
@@ -398,8 +406,7 @@ class mymap {
     Creates the new node that we're inserting into the tree.
     Takes in a key and a value as arguments.
   */
-  NODE* _constructInsertedNode(keyType key, valueType value) { 
-    
+  NODE* _constructInsertedNode(keyType key, valueType value) {
     // Construct the node to be inserted with the given key and value
     NODE* toPut = new NODE();
     toPut->key = key;
@@ -576,7 +583,7 @@ class mymap {
     // Nodes to keep track of where we are.
     NODE* cur = this->root;
     NODE* prev = nullptr;
-    if(!_insertWalk(cur, prev, key, value)) {
+    if (!_insertWalk(cur, prev, key, value)) {
       delete toPut;
       return;
     }
@@ -595,8 +602,9 @@ class mymap {
     // If we made it to a new leaf location, increment size.
     ++this->size;
 
-    // Walk down the tree again to check the balance of each node along the insertion path.
-    // _balanceCheckWalk(key);
+    // Walk down the tree again to check the balance of each node along the
+    // insertion path.
+    _balanceCheckWalk(key);
   }
 
   //
@@ -758,12 +766,11 @@ class mymap {
   // threaded, self-balancing BST
   //
   vector<pair<keyType, valueType> > toVector() {
-    
     vector<NODE*> nodes;
     _gatherNodesInSubtree(nodes, this->root);
     vector<pair<keyType, valueType> > pairs;
 
-    for(NODE*& a : nodes) {
+    for (NODE*& a : nodes) {
       pairs.push_back(pair<keyType, valueType>(a->key, a->value));
     }
 
@@ -781,7 +788,6 @@ class mymap {
   // threaded, self-balancing BST
   //
   string checkBalance() {
-    
     static string bal = "";
     stringstream balStream(bal);
     _preOrder(this->root, balStream);
