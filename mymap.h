@@ -73,11 +73,23 @@ class mymap {
     }
   }
 
-  NODE* _createBalancedSubtree(NODE*& cur, int low, int high, vector<NODE*>& nodes) {
+  /*
+    _createBalancedSubTree:
+
+    This function handles the recursion for inserting the nodes from the subtree vector.
+    Takes in the Node where the break occurred, a low and high index, and the vector of nodes.
+  */
+  void _createBalancedSubtree(NODE*& cur, int& low, int& high, vector<NODE*>& nodes) {
 
     // The midpoint of any interval is low + high / 2
-    int mid = (low + high) / 2;
-
+    int mid;
+    if(high != low) {
+      mid = (low + high) / 2;
+    } else {
+      return;
+    }
+    
+    cout << high << endl;
     // The next node we insert should be at that point.
     // Over any sub-interval, half of the nodes should be > the middle and half should be < the middle
     cur = nodes[mid];
@@ -91,7 +103,7 @@ class mymap {
     _rebalanceTree:
 
     Performs the actual rebalancing of the leaning BST.
-    The boolean flag indicates whether we're doing a left subtree rebalance, or right
+    Takes in the node pointers of the break point and the parent of the broken node
   */
   void _rebalanceTree(NODE*& breakLocation, NODE*& parent) { 
     
@@ -127,6 +139,7 @@ class mymap {
 
     // Then, recursively insert and rebalance the tree
     _createBalancedSubtree(balancedSubTreeRoot->left, left, mid, nodesInSubtree);
+    mid = nodesInSubtree.size() / 2;
     _createBalancedSubtree(balancedSubTreeRoot->right, mid, right, nodesInSubtree);
   }
 
@@ -167,6 +180,13 @@ class mymap {
     }
   }
 
+  /*
+    _clear:
+
+    Private helper function called by the clear() function.
+    Takes in a node pointer as the starting point for deallocation to occur
+    Recursive clears the nodes in the subtree in post-order.
+  */
   void _clear(NODE* cur) {
     // Only leaves should be deleted from the bottom up.
     if (cur->left != nullptr) {
@@ -180,6 +200,12 @@ class mymap {
     delete cur;
   }
 
+  /*
+    _copyNode:
+
+    Allocates a new node using the other node's values and returns the new node.
+    Takes in a constant reference to the other node as an argument.
+  */
   NODE* _copyNode(const NODE* otherCur) {
     // Generic node copy of all attributes
     NODE* cur = new NODE();
@@ -195,6 +221,13 @@ class mymap {
     return cur;
   }
 
+  /*
+    _copyRecurse:
+
+    Private helper function called by the _copyData() function, in order to copy all of the nodes in a tree
+    Creates a new node for each node in the tree to be copied
+    Takes in a pointer to the origin of the tree that we're constructing and a reference to the tree that we're copying
+  */
   void _copyRecurse(NODE*& cur, const NODE* otherCur) {
     // Start by copying the node we're at.
     cur = _copyNode(otherCur);
@@ -215,6 +248,12 @@ class mymap {
     }
   }
 
+  /*
+    _copyData:
+
+    Wrapper function that calls the recursive _copyRecurse function, in order to completely copy
+    the tree that is passed in as a reference.
+  */
   void _copyData(const mymap& other) {
     // Establish a pointer to the root of the other tree.
     NODE* otherCur = other.root;
@@ -229,6 +268,13 @@ class mymap {
     _copyRecurse(this->root, otherCur);
   }
 
+  /*
+    _preOrder:
+
+    Helper function called by checkBalance() in order to check the balance of all of the nodes in the tree
+    Recursively traverses the tree and adds to the string stream of balance figures.
+    Takes in a pointer to the root of the tree whose balance we're checking and a stringstream that we add to
+  */
   void _preOrder(NODE* cur, stringstream& bal) {
 
     if(cur == nullptr) {
@@ -249,6 +295,119 @@ class mymap {
       return;
     }
     
+  }
+
+  /*
+    _updatenLnR:
+
+    Walks back up the tree after a node is inserted and updates the heights of all nodes above the new leaf.
+    Takes the stack of nodes created during the walk down the tree, and the key and value we wanted to insert
+    as arguments.
+  */
+  void _updatenLnR(stack<NODE*>& nodes, keyType key, valueType value) {
+
+    // Update nL and nR along the insertion path
+    while(!nodes.size() == 0) {
+      if(key < nodes.top()->key) {
+        ++nodes.top()->nL;
+      } else {
+        ++nodes.top()->nR;
+      }
+      //insertionPathDown.push(nodesToUpdateNLNR.top());
+      // Move on to updating the next node
+      nodes.pop();
+    }
+  }
+
+  /*
+    _insertWalk:
+
+    Performs the walk down the tree to the insertion destination
+    If the key isn't unique, we update the value and return false.
+    The return value is used to know whether or not we need to delete the new node we constructed
+    at the beginning of the put function
+    Takes in the previous and current nodes as an argument, as well as the key to be inserted
+  */
+  bool _insertWalk(NODE*& cur, NODE*& prev, keyType key, valueType value) {
+
+    // Keep track of the nodes we visited while inserting something.
+    stack<NODE*> nodesToUpdateNLNR;
+
+    // New addition for milestone 5, a vector of NODE* for checking balance
+    // If the tree isn't empty, walk to the node's insertion location
+    while (cur != nullptr) {
+      // Tree is in order of keys, not values
+      if (key < cur->key) {
+        // If the key is smaller than the key at the current node, walk left
+        nodesToUpdateNLNR.push(cur);
+        prev = cur;
+        cur = cur->left;
+
+      } else if (key > cur->key) {
+        // If the key is larger than the key at the current node, walk right
+        nodesToUpdateNLNR.push(cur);
+        prev = cur;
+        cur = (cur->isThreaded) ? nullptr : cur->right;
+      } else {
+        // If the key is equal to the key at the current node, stop
+        // No duplicates allowed.
+        cur->value = value;
+        return false;
+      }
+    }
+    _updatenLnR(nodesToUpdateNLNR, key, value);
+    return true;
+  }
+
+  /*
+    _balanceCheckWalk:
+
+    Performs the walk down the tree looking for a violation of the seesaw balance property
+    Once a violation is found, this function calls the _rebalanceTree() function to correct the issue
+    Takes in the key that we inserted as an argument.
+  */
+  void _balanceCheckWalk(keyType key) {
+    // Walk down the tree again.
+    NODE* cur = this->root;
+    NODE* prev = nullptr;
+
+    while(cur != nullptr) {
+      // Tree is in order of keys, not values
+      if (key < cur->key) {
+        // If the key is smaller than the key at the current node, walk left
+        prev = cur;
+        cur = cur->left;
+
+      } else if (key > cur->key) {
+        // If the key is larger than the key at the current node, walk right
+        prev = cur;
+        cur = (cur->isThreaded) ? nullptr : cur->right;
+      } else {
+        break;
+      }
+      if(!_isBalancedTree(cur)) {
+        _rebalanceTree(cur, prev);
+        break;
+      }
+    }
+  }
+
+  /*
+    _constructInsertedNode:
+
+    Creates the new node that we're inserting into the tree.
+    Takes in a key and a value as arguments.
+  */
+  NODE* _constructInsertedNode(keyType key, valueType value) { 
+    
+    // Construct the node to be inserted with the given key and value
+    NODE* toPut = new NODE();
+    toPut->key = key;
+    toPut->value = value;
+    toPut->left = nullptr;
+    toPut->right = nullptr;
+    toPut->isThreaded = false;
+    return toPut;
   }
 
   //
@@ -399,12 +558,7 @@ class mymap {
   //
   void put(keyType key, valueType value) {
     // Set up the new node with a default configuration
-    NODE* toPut = new NODE();
-    toPut->key = key;
-    toPut->value = value;
-    toPut->left = nullptr;
-    toPut->right = nullptr;
-    toPut->isThreaded = false;
+    NODE* toPut = _constructInsertedNode(key, value);
 
     // Base case, tree is totally empty
     if (this->root == nullptr) {
@@ -422,35 +576,10 @@ class mymap {
     // Nodes to keep track of where we are.
     NODE* cur = this->root;
     NODE* prev = nullptr;
-
-    // Keep track of the nodes we visited while inserting something.
-    stack<NODE*> nodesToUpdateNLNR;
-
-    // New addition for milestone 5, a vector of NODE* for checking balance
-    // If the tree isn't empty, walk to the node's insertion location
-    while (cur != nullptr) {
-      // Tree is in order of keys, not values
-      if (key < cur->key) {
-        // If the key is smaller than the key at the current node, walk left
-        nodesToUpdateNLNR.push(cur);
-        prev = cur;
-        cur = cur->left;
-
-      } else if (key > cur->key) {
-        // If the key is larger than the key at the current node, walk right
-        nodesToUpdateNLNR.push(cur);
-        prev = cur;
-        cur = (cur->isThreaded) ? nullptr : cur->right;
-      } else {
-        // If the key is equal to the key at the current node, stop
-        // No duplicates allowed.
-        cur->value = value;
-        delete toPut;
-        return;
-      }
+    if(!_insertWalk(cur, prev, key, value)) {
+      delete toPut;
+      return;
     }
-    // If we made it to a new leaf location, increment size.
-    ++this->size;
 
     // Insert the node to the correct side of the former leaf.
     if (key < prev->key) {
@@ -463,41 +592,11 @@ class mymap {
       toPut->isThreaded = true;
       prev->isThreaded = false;
     }
+    // If we made it to a new leaf location, increment size.
+    ++this->size;
 
-    // Update nL and nR along the insertion path
-    while(!nodesToUpdateNLNR.size() == 0) {
-      if(key < nodesToUpdateNLNR.top()->key) {
-        ++nodesToUpdateNLNR.top()->nL;
-      } else {
-        ++nodesToUpdateNLNR.top()->nR;
-      }
-      //insertionPathDown.push(nodesToUpdateNLNR.top());
-      // Move on to updating the next node
-      nodesToUpdateNLNR.pop();
-    }
-
-    cur = this->root;
-    prev = nullptr;
-
-    // while(cur != nullptr) {
-    //   // Tree is in order of keys, not values
-    //   if (key < cur->key) {
-    //     // If the key is smaller than the key at the current node, walk left
-    //     nodesToUpdateNLNR.push(cur);
-    //     prev = cur;
-    //     cur = cur->left;
-
-    //   } else if (key > cur->key) {
-    //     // If the key is larger than the key at the current node, walk right
-    //     nodesToUpdateNLNR.push(cur);
-    //     prev = cur;
-    //     cur = (cur->isThreaded) ? nullptr : cur->right;
-    //   }
-    //   if(!_isBalancedTree(cur)) {
-    //     _rebalanceTree(cur, prev);
-    //     break;
-    //   }
-    // }
+    // Walk down the tree again to check the balance of each node along the insertion path.
+    // _balanceCheckWalk(key);
   }
 
   //
